@@ -4,154 +4,228 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ProposalCraft — Win More Upwork Jobs</title>
-<link href="https://fonts.googleapis.com/css2?family=Neue+Haas+Grotesk:wght@400;500;600&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --upwork-green: #14a800;
-  --upwork-green-dark: #108a00;
-  --upwork-green-light: #e6f4e6;
+  --green: #14a800;
+  --green-dark: #0d7a00;
+  --green-light: #e8f5e8;
+  --green-glow: rgba(20,168,0,0.15);
   --navy: #001e00;
   --white: #ffffff;
-  --off-white: #f7f9f7;
-  --gray-50: #f2f7f2;
-  --gray-100: #e8f0e8;
-  --gray-200: #d5e3d5;
-  --gray-400: #8a9e8a;
-  --gray-600: #5a6e5a;
-  --gray-800: #2d3e2d;
-  --text: #1a2e1a;
+  --off: #f5f9f5;
   --border: #dde8dd;
-  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
-  --shadow-lg: 0 8px 40px rgba(0,0,0,0.08);
+  --text: #1a2e1a;
+  --muted: #6b7e6b;
 }
 
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--off-white);
+  background: var(--off);
   color: var(--text);
   font-family: 'Plus Jakarta Sans', sans-serif;
-  min-height: 100vh;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: var(--off-white); }
-::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
+/* CURSOR */
+.cursor {
+  width: 10px; height: 10px;
+  background: var(--green);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.1s ease;
+  mix-blend-mode: multiply;
+}
+.cursor-ring {
+  width: 32px; height: 32px;
+  border: 1.5px solid rgba(20,168,0,0.4);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transition: all 0.12s ease;
+}
+
+/* PROGRESS */
+.progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--green), #7fff00);
+  z-index: 300;
+  transition: width 0.1s ease;
+  box-shadow: 0 0 8px rgba(20,168,0,0.5);
+}
 
 /* NAV */
 .nav {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
   height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 48px;
+  padding: 0 60px;
+  background: rgba(245,249,245,0.88);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(221,232,221,0.6);
+  transition: all 0.3s ease;
+}
+
+.nav.scrolled {
+  background: rgba(245,249,245,0.98);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
 }
 
 .nav-logo {
   display: flex;
   align-items: center;
   gap: 10px;
+  text-decoration: none;
 }
 
-.nav-logo-mark {
-  width: 32px; height: 32px;
-  background: var(--upwork-green);
-  border-radius: 8px;
+.logo-mark {
+  width: 34px; height: 34px;
+  background: var(--green);
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.nav-logo-mark svg {
-  width: 18px; height: 18px;
-  fill: white;
+.nav-logo:hover .logo-mark {
+  transform: rotate(-8deg) scale(1.08);
+  box-shadow: 0 4px 16px rgba(20,168,0,0.3);
 }
 
-.nav-logo-text {
+.logo-mark svg { width: 18px; height: 18px; fill: white; }
+
+.logo-text {
   font-size: 17px;
   font-weight: 800;
   color: var(--navy);
   letter-spacing: -0.03em;
 }
 
-.nav-logo-text span { color: var(--upwork-green); }
+.logo-text span { color: var(--green); }
 
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 
-.nav-tag {
+.nav-pill {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--upwork-green);
-  background: var(--upwork-green-light);
-  padding: 5px 12px;
+  color: var(--green);
+  background: var(--green-light);
+  padding: 6px 14px;
   border-radius: 20px;
+  border: 1px solid rgba(20,168,0,0.2);
+  animation: pillPulse 3s ease-in-out infinite;
 }
 
-.nav-stat {
+@keyframes pillPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(20,168,0,0.2); }
+  50% { box-shadow: 0 0 0 6px rgba(20,168,0,0); }
+}
+
+.nav-cta {
+  padding: 9px 20px;
+  background: var(--green);
+  color: white;
   font-size: 12px;
-  font-weight: 500;
-  color: var(--gray-600);
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-.nav-stat::before {
-  content: '';
-  width: 6px; height: 6px;
-  background: var(--upwork-green);
-  border-radius: 50%;
-  animation: blink 2s infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+.nav-cta:hover {
+  background: var(--green-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(20,168,0,0.25);
 }
 
 /* HERO */
 .hero {
-  background: linear-gradient(135deg, var(--navy) 0%, #0d2b0d 50%, #1a3d1a 100%);
-  padding: 80px 48px 90px;
+  min-height: 100vh;
+  background: linear-gradient(160deg, var(--navy) 0%, #0a2a0a 45%, #143614 100%);
+  display: flex;
+  align-items: center;
+  padding: 100px 60px 80px;
   position: relative;
   overflow: hidden;
 }
 
-.hero-dots {
+/* Animated grid */
+.hero-grid {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(20,168,0,0.15) 1px, transparent 1px);
-  background-size: 32px 32px;
-  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(20,168,0,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20,168,0,0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: gridSlide 20s linear infinite;
 }
 
-.hero-glow {
+@keyframes gridSlide {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(48px); }
+}
+
+/* Floating orbs */
+.orb {
   position: absolute;
-  top: -100px; right: -100px;
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(20,168,0,0.12) 0%, transparent 70%);
+  border-radius: 50%;
   pointer-events: none;
+  filter: blur(60px);
+  animation: orbFloat 8s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(20,168,0,0.18) 0%, transparent 70%);
+  top: -100px; right: 10%;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(127,255,0,0.1) 0%, transparent 70%);
+  bottom: 10%; left: 5%;
+  animation-delay: 3s;
+}
+
+.orb-3 {
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(20,168,0,0.12) 0%, transparent 70%);
+  top: 40%; left: 40%;
+  animation-delay: 6s;
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-30px) scale(1.05); }
 }
 
 .hero-inner {
   max-width: 1100px;
   margin: 0 auto;
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 80px;
@@ -160,8 +234,7 @@ body {
   z-index: 1;
 }
 
-.hero-left {}
-
+/* HERO LEFT */
 .hero-eyebrow {
   display: inline-flex;
   align-items: center;
@@ -170,201 +243,410 @@ body {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--upwork-green);
-  background: rgba(20,168,0,0.12);
+  color: var(--green);
+  background: rgba(20,168,0,0.1);
   border: 1px solid rgba(20,168,0,0.25);
-  padding: 6px 14px;
+  padding: 7px 14px;
   border-radius: 20px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s ease forwards;
+}
+
+.eyebrow-dot {
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 
 .hero h1 {
   font-family: 'Lora', serif;
-  font-size: clamp(36px, 4vw, 52px);
+  font-size: clamp(40px, 5vw, 62px);
   font-weight: 600;
-  line-height: 1.15;
+  line-height: 1.1;
   letter-spacing: -0.02em;
   color: white;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.3s ease forwards;
 }
 
 .hero h1 em {
   font-style: italic;
-  color: var(--upwork-green);
+  color: var(--green);
+  position: relative;
+}
+
+.hero h1 em::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--green), transparent);
+  border-radius: 2px;
 }
 
 .hero-sub {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 400;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,255,255,0.5);
   line-height: 1.8;
-  margin-bottom: 40px;
+  margin-bottom: 44px;
+  max-width: 460px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s ease forwards;
 }
 
-.hero-features {
+.hero-buttons {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 52px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.5s ease forwards;
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 28px;
+  background: var(--green);
+  color: white;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-primary:hover::before { left: 100%; }
+
+.btn-primary:hover {
+  background: var(--green-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(20,168,0,0.35);
+}
+
+.btn-primary svg { width: 16px; height: 16px; }
+
+.btn-ghost {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 24px;
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.7);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border-color: rgba(255,255,255,0.2);
+}
+
+.hero-stats {
+  display: flex;
+  gap: 36px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s ease forwards;
+}
+
+.hero-stat {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 3px;
 }
 
-.hero-feature {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.7);
+.stat-num {
+  font-family: 'Lora', serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: white;
+  line-height: 1;
 }
 
-.feature-check {
-  width: 20px; height: 20px;
-  background: rgba(20,168,0,0.2);
-  border: 1px solid rgba(20,168,0,0.4);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.feature-check svg {
-  width: 10px; height: 10px;
-  stroke: var(--upwork-green);
-}
-
-/* HERO CARD */
-.hero-card {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 20px;
-  padding: 32px;
-  backdrop-filter: blur(10px);
-}
-
-.hero-card-label {
+.stat-label {
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.35);
-  margin-bottom: 20px;
 }
 
-.sample-proposal {
-  font-size: 13px;
-  font-weight: 400;
-  color: rgba(255,255,255,0.7);
-  line-height: 1.9;
-  font-family: 'Lora', serif;
-  font-style: italic;
-  border-left: 2px solid var(--upwork-green);
-  padding-left: 16px;
+.stat-divider {
+  width: 1px;
+  background: rgba(255,255,255,0.1);
+  align-self: stretch;
 }
 
-.hero-card-footer {
+/* HERO RIGHT - Floating Card */
+.hero-right {
+  opacity: 0;
+  animation: fadeLeft 0.8s 0.7s ease forwards;
+}
+
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.floating-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 28px;
+  backdrop-filter: blur(20px);
+  animation: cardFloat 6s ease-in-out infinite;
+  position: relative;
+}
+
+@keyframes cardFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.floating-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(20,168,0,0.3), transparent, rgba(20,168,0,0.1));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  padding: 1px;
+  pointer-events: none;
+}
+
+.card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 20px;
 }
 
-.hero-card-stat {
+.card-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--green);
+  background: rgba(20,168,0,0.12);
+  border: 1px solid rgba(20,168,0,0.2);
+  padding: 4px 10px;
+  border-radius: 10px;
+}
+
+.card-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.card-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+
+.card-dot:nth-child(1) { background: #ff5f57; }
+.card-dot:nth-child(2) { background: #febc2e; }
+.card-dot:nth-child(3) { background: #28c840; }
+
+.proposal-text {
+  font-family: 'Lora', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.9;
+  border-left: 2px solid var(--green);
+  padding-left: 16px;
+  margin-bottom: 20px;
+}
+
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 14px;
+  background: var(--green);
+  margin-left: 2px;
+  animation: cursorBlink 1s infinite;
+  vertical-align: middle;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.card-metrics {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+.card-metric {
   text-align: center;
 }
 
-.hero-card-num {
+.card-metric-num {
   font-family: 'Lora', serif;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 600;
   color: white;
   display: block;
   line-height: 1;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
-.hero-card-text {
-  font-size: 10px;
+.card-metric-label {
+  font-size: 9px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.3);
 }
 
-/* MAIN SECTION */
-.main {
-  max-width: 1100px;
+/* TRUST BAR */
+.trust-bar {
+  background: white;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 60px;
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  overflow: hidden;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.trust-item:hover { color: var(--green); }
+
+.trust-icon {
+  width: 32px; height: 32px;
+  background: var(--green-light);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.trust-item:hover .trust-icon { transform: scale(1.1); }
+
+.trust-icon svg {
+  width: 15px; height: 15px;
+  stroke: var(--green);
+}
+
+/* MAIN APP SECTION */
+.app-section {
+  padding: 80px 60px 100px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 64px 48px 100px;
 }
 
-.section-header {
-  margin-bottom: 40px;
-}
-
-.section-eyebrow {
+.section-tag {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--upwork-green);
+  color: var(--green);
   margin-bottom: 8px;
 }
 
 .section-title {
   font-family: 'Lora', serif;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--text);
+  margin-bottom: 48px;
 }
 
-/* FORM LAYOUT */
-.form-layout {
+/* FORM */
+.form-grid {
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: 1fr 360px;
   gap: 24px;
   align-items: start;
 }
 
-/* INPUT CARDS */
-.input-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+.input-stack { display: flex; flex-direction: column; gap: 16px; }
 
+/* INPUT CARDS */
 .input-card {
   background: white;
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: var(--shadow);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  transition: all 0.3s ease;
+  transform: translateY(0);
+}
+
+.input-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
 }
 
 .input-card:focus-within {
-  border-color: var(--upwork-green);
-  box-shadow: 0 0 0 3px rgba(20,168,0,0.08), var(--shadow);
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(20,168,0,0.08), 0 4px 20px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
 }
 
-.input-card-header {
+.card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 14px 18px;
-  border-bottom: 1px solid var(--gray-50);
-  background: var(--gray-50);
+  background: #fafcfa;
+  border-bottom: 1px solid #f0f4f0;
 }
 
-.input-card-left {
+.card-top-left {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.input-icon {
+.card-icon {
   width: 30px; height: 30px;
   background: white;
   border: 1px solid var(--border);
@@ -372,34 +654,41 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
 }
 
-.input-icon svg {
+.input-card:focus-within .card-icon {
+  background: var(--green-light);
+  border-color: rgba(20,168,0,0.2);
+}
+
+.card-icon svg {
   width: 14px; height: 14px;
-  stroke: var(--upwork-green);
+  stroke: var(--muted);
+  transition: stroke 0.2s ease;
 }
 
-.input-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-}
+.input-card:focus-within .card-icon svg { stroke: var(--green); }
 
-.input-sublabel {
-  font-size: 11px;
-  color: var(--gray-400);
-  margin-top: 1px;
-}
+.card-label { font-size: 13px; font-weight: 700; color: var(--text); }
+.card-sublabel { font-size: 11px; color: #aab8aa; margin-top: 1px; }
 
-.input-badge {
+.char-badge {
   font-size: 10px;
   font-weight: 600;
-  color: var(--gray-400);
+  color: #aab8aa;
   background: white;
   border: 1px solid var(--border);
   padding: 3px 8px;
   border-radius: 4px;
+  transition: all 0.2s ease;
   font-variant-numeric: tabular-nums;
+}
+
+.input-card:focus-within .char-badge {
+  color: var(--green);
+  border-color: rgba(20,168,0,0.2);
+  background: var(--green-light);
 }
 
 textarea, input[type="text"] {
@@ -414,34 +703,32 @@ textarea, input[type="text"] {
   resize: none;
   outline: none;
   line-height: 1.8;
+  transition: background 0.2s ease;
 }
 
-textarea::placeholder, input::placeholder {
-  color: #c0ccc0;
-  font-weight: 400;
-}
+textarea::placeholder, input::placeholder { color: #c8d4c8; }
 
 #job_post { height: 200px; }
 #freelancer_skills { height: 130px; }
 
-.input-row {
+.two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
 
-.input-half {
+.half-input {
   padding: 14px 18px;
-  border-right: 1px solid var(--gray-50);
+  border-right: 1px solid #f0f4f0;
 }
 
-.input-half:last-child { border-right: none; }
+.half-input:last-child { border-right: none; }
 
-.input-half-label {
+.half-label {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--gray-400);
+  color: #aab8aa;
   margin-bottom: 6px;
 }
 
@@ -449,7 +736,6 @@ input[type="text"] {
   padding: 0;
   font-size: 14px;
   font-weight: 600;
-  color: var(--text);
   background: transparent;
 }
 
@@ -462,246 +748,272 @@ input[type="text"] {
   top: 80px;
 }
 
-/* GENERATE CARD */
-.generate-card {
+.gen-card {
   background: white;
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
-.generate-card-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 6px;
-}
+.gen-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.gen-sub { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
 
-.generate-card-sub {
-  font-size: 12px;
-  color: var(--gray-400);
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-.generate-btn {
+.gen-btn {
   width: 100%;
   padding: 16px;
-  background: var(--upwork-green);
+  background: linear-gradient(135deg, var(--green), #0d9200);
   border: none;
   border-radius: 12px;
   color: white;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.01em;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  position: relative;
+  overflow: hidden;
 }
 
-.generate-btn svg {
-  width: 16px; height: 16px;
+.gen-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
 }
 
-.generate-btn:hover {
-  background: var(--upwork-green-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(20,168,0,0.25);
+.gen-btn:hover::after { transform: translateX(100%); }
+
+.gen-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(20,168,0,0.3);
 }
 
-.generate-btn:disabled {
+.gen-btn:active { transform: translateY(0); }
+
+.gen-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
-.generate-divider {
+.gen-btn svg { width: 16px; height: 16px; }
+
+.divider {
   display: flex;
   align-items: center;
   gap: 10px;
   margin: 16px 0;
 }
 
-.generate-divider-line {
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
+.divider-line { flex: 1; height: 1px; background: var(--border); }
 
-.generate-divider-text {
+.divider-text {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--gray-400);
+  color: #aab8aa;
 }
 
-.tone-options {
+.tone-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
 
-.tone-option {
-  padding: 10px 12px;
+.tone-btn {
+  padding: 10px;
   border: 1.5px solid var(--border);
   border-radius: 8px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  color: var(--gray-600);
+  color: var(--muted);
   cursor: pointer;
-  transition: all 0.15s ease;
-  text-align: center;
+  transition: all 0.2s ease;
   background: white;
   font-family: 'Plus Jakarta Sans', sans-serif;
+  text-align: center;
 }
 
-.tone-option:hover {
-  border-color: var(--upwork-green);
-  color: var(--upwork-green);
-  background: var(--upwork-green-light);
+.tone-btn:hover {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-light);
+  transform: scale(1.02);
 }
 
-.tone-option.selected {
-  border-color: var(--upwork-green);
-  color: var(--upwork-green);
-  background: var(--upwork-green-light);
+.tone-btn.active {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-light);
 }
 
-/* TIPS CARD */
+/* TIPS */
 .tips-card {
   background: var(--navy);
   border-radius: 16px;
   padding: 24px;
+  position: relative;
+  overflow: hidden;
 }
 
-.tips-card-title {
-  font-size: 12px;
+.tips-card::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 150px; height: 150px;
+  background: radial-gradient(circle, rgba(20,168,0,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.tips-title {
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--upwork-green);
-  margin-bottom: 16px;
+  color: var(--green);
+  margin-bottom: 18px;
 }
 
-.tip-item {
+.tip {
   display: flex;
   gap: 10px;
   margin-bottom: 14px;
   align-items: flex-start;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
 }
 
-.tip-item:last-child { margin-bottom: 0; }
+.tip.show { opacity: 1; transform: translateX(0); }
+.tip:last-child { margin-bottom: 0; }
 
-.tip-dot {
-  width: 5px; height: 5px;
-  background: var(--upwork-green);
-  border-radius: 50%;
+.tip-line {
+  width: 2px;
   flex-shrink: 0;
-  margin-top: 7px;
+  background: var(--green);
+  border-radius: 2px;
+  margin-top: 4px;
+  align-self: stretch;
+  opacity: 0.4;
 }
 
 .tip-text {
   font-size: 12px;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.45);
   line-height: 1.7;
-  font-weight: 400;
 }
 
 /* LOADING */
-.loading-wrap {
+.loading-area {
   display: none;
   margin-top: 24px;
 }
 
-.loading-wrap.visible { display: block; }
+.loading-area.show { display: block; }
 
 .loading-card {
   background: white;
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 60px 40px;
+  padding: 64px 40px;
   text-align: center;
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
 }
 
-.loading-icon {
-  width: 56px; height: 56px;
-  background: var(--upwork-green-light);
-  border-radius: 16px;
+.loader-ring {
+  width: 64px; height: 64px;
+  margin: 0 auto 28px;
+  position: relative;
+}
+
+.loader-ring::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+}
+
+.loader-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: var(--green);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loader-icon {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 20px;
 }
 
-.loading-icon svg {
-  width: 24px; height: 24px;
-  stroke: var(--upwork-green);
-  animation: spinSlow 2s linear infinite;
+.loader-icon svg {
+  width: 22px; height: 22px;
+  stroke: var(--green);
 }
-
-@keyframes spinSlow { to { transform: rotate(360deg); } }
 
 .loading-title {
   font-family: 'Lora', serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
   font-style: italic;
   color: var(--text);
   margin-bottom: 8px;
 }
 
-.loading-steps {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  margin-top: 24px;
+.loading-sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+
+.loading-progress-bar {
+  width: 240px;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
-.loading-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: var(--gray-400);
-  font-weight: 500;
+.loading-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), #7fff00);
+  border-radius: 2px;
+  animation: loadProgress 3s ease-in-out forwards;
 }
 
-.loading-step-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--gray-200);
-  animation: stepPulse 1.5s ease-in-out infinite;
-}
-
-.loading-step:nth-child(1) .loading-step-dot { animation-delay: 0s; }
-.loading-step:nth-child(2) .loading-step-dot { animation-delay: 0.5s; }
-.loading-step:nth-child(3) .loading-step-dot { animation-delay: 1s; }
-
-@keyframes stepPulse {
-  0%, 100% { background: var(--gray-200); transform: scale(1); }
-  50% { background: var(--upwork-green); transform: scale(1.4); }
+@keyframes loadProgress {
+  0% { width: 0%; }
+  30% { width: 40%; }
+  60% { width: 70%; }
+  90% { width: 88%; }
+  100% { width: 95%; }
 }
 
 /* OUTPUT */
-.output-wrap {
+.output-area {
   display: none;
   margin-top: 24px;
-  animation: slideIn 0.4s ease;
+  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.output-wrap.visible { display: block; }
+.output-area.show { display: block; }
 
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(12px); }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -710,25 +1022,21 @@ input[type="text"] {
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.08);
 }
 
-.output-header {
+.output-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 24px;
+  padding: 16px 24px;
+  background: #fafcfa;
   border-bottom: 1px solid var(--border);
-  background: var(--gray-50);
 }
 
-.output-header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+.output-bar-left { display: flex; align-items: center; gap: 12px; }
 
-.output-status {
+.output-live {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -736,14 +1044,21 @@ input[type="text"] {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--upwork-green);
+  color: var(--green);
 }
 
-.output-status::before {
+.output-live::before {
   content: '';
   width: 6px; height: 6px;
-  background: var(--upwork-green);
+  background: var(--green);
   border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(20,168,0,0.15);
+  animation: livePulse2 2s infinite;
+}
+
+@keyframes livePulse2 {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(20,168,0,0.15); }
+  50% { box-shadow: 0 0 0 6px rgba(20,168,0,0); }
 }
 
 .output-score {
@@ -759,25 +1074,13 @@ input[type="text"] {
   color: var(--text);
 }
 
-.score-bar {
-  display: flex;
-  gap: 2px;
-}
+.score-dots { display: flex; gap: 3px; }
+.score-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+.score-dot.off { background: var(--border); }
 
-.score-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--upwork-green);
-}
+.output-btns { display: flex; gap: 8px; }
 
-.score-dot.empty { background: var(--gray-200); }
-
-.output-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.action-btn {
+.out-btn {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -787,57 +1090,61 @@ input[type="text"] {
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
   border: none;
 }
 
-.action-btn svg { width: 13px; height: 13px; }
+.out-btn svg { width: 13px; height: 13px; }
 
-.btn-outline {
+.out-btn-ghost {
   background: white;
-  color: var(--gray-600);
+  color: var(--muted);
   border: 1px solid var(--border) !important;
 }
 
-.btn-outline:hover { border-color: var(--upwork-green) !important; color: var(--upwork-green); }
+.out-btn-ghost:hover {
+  border-color: var(--green) !important;
+  color: var(--green);
+  transform: translateY(-1px);
+}
 
-.btn-green {
-  background: var(--upwork-green);
+.out-btn-solid {
+  background: var(--green);
   color: white;
 }
 
-.btn-green:hover { background: var(--upwork-green-dark); }
-.btn-green.copied { background: #059669; }
+.out-btn-solid:hover {
+  background: var(--green-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(20,168,0,0.25);
+}
 
-.proposal-body {
+.out-btn-solid.copied { background: #059669; }
+
+.proposal-output {
   padding: 40px 48px;
   font-size: 14px;
   line-height: 2;
   color: #374151;
   white-space: pre-wrap;
-  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 400;
 }
 
 .output-footer {
-  padding: 16px 24px;
-  border-top: 1px solid var(--border);
-  background: var(--gray-50);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 14px 24px;
+  border-top: 1px solid var(--border);
+  background: #fafcfa;
 }
 
-.output-footer-text {
-  font-size: 11px;
-  color: var(--gray-400);
-  font-weight: 500;
-}
+.footer-note { font-size: 11px; color: #aab8aa; font-weight: 500; }
 
-.word-count {
+.word-pill {
   font-size: 11px;
-  font-weight: 600;
-  color: var(--gray-600);
+  font-weight: 700;
+  color: var(--muted);
   background: white;
   border: 1px solid var(--border);
   padding: 3px 10px;
@@ -845,253 +1152,316 @@ input[type="text"] {
 }
 
 /* WHY SECTION */
-.why-section {
+.why {
   background: white;
   border-top: 1px solid var(--border);
-  padding: 80px 48px;
+  padding: 80px 60px;
 }
 
-.why-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-}
+.why-inner { max-width: 1100px; margin: 0 auto; }
 
 .why-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2px;
-  margin-top: 48px;
   background: var(--border);
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
+  margin-top: 48px;
 }
 
 .why-cell {
   background: white;
-  padding: 32px 28px;
-  transition: background 0.2s;
+  padding: 36px 28px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.why-cell:hover { background: var(--gray-50); }
+.why-cell::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--green);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.why-cell:hover::before { transform: scaleX(1); }
+.why-cell:hover { background: var(--off); transform: translateY(-2px); }
 
 .why-icon {
-  width: 40px; height: 40px;
-  background: var(--upwork-green-light);
-  border-radius: 10px;
+  width: 44px; height: 44px;
+  background: var(--green-light);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
+  transition: all 0.3s ease;
+}
+
+.why-cell:hover .why-icon {
+  background: var(--green);
+  transform: scale(1.1) rotate(-5deg);
 }
 
 .why-icon svg {
   width: 18px; height: 18px;
-  stroke: var(--upwork-green);
+  stroke: var(--green);
+  transition: stroke 0.3s ease;
 }
 
-.why-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 8px;
-}
+.why-cell:hover .why-icon svg { stroke: white; }
 
-.why-desc {
-  font-size: 13px;
-  color: var(--gray-400);
-  line-height: 1.7;
-  font-weight: 400;
-}
+.why-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+.why-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
 
 /* FOOTER */
 footer {
   background: var(--navy);
-  padding: 36px 48px;
+  padding: 40px 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+  overflow: hidden;
 }
 
-.footer-logo {
-  font-size: 16px;
-  font-weight: 800;
-  color: white;
-  letter-spacing: -0.02em;
+footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(20,168,0,0.5), transparent);
 }
 
-.footer-logo span { color: var(--upwork-green); }
+.footer-logo { font-size: 17px; font-weight: 800; color: white; letter-spacing: -0.02em; }
+.footer-logo span { color: var(--green); }
+.footer-note { font-size: 11px; color: rgba(255,255,255,0.25); font-weight: 500; }
 
-.footer-note {
-  font-size: 11px;
-  color: rgba(255,255,255,0.3);
-  font-weight: 500;
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* RESPONSIVE */
-@media (max-width: 900px) {
+@media (max-width: 960px) {
   .nav { padding: 0 24px; }
-  .hero { padding: 60px 24px; }
+  .hero { padding: 100px 24px 60px; }
   .hero-inner { grid-template-columns: 1fr; gap: 40px; }
-  .hero-card { display: none; }
-  .main { padding: 48px 24px 80px; }
-  .form-layout { grid-template-columns: 1fr; }
+  .floating-card { display: none; }
+  .app-section { padding: 60px 24px 80px; }
+  .form-grid { grid-template-columns: 1fr; }
   .sidebar { position: static; }
+  .why { padding: 60px 24px; }
   .why-grid { grid-template-columns: 1fr; }
-  .why-section { padding: 60px 24px; }
   footer { flex-direction: column; gap: 12px; text-align: center; padding: 32px 24px; }
-  .input-row { grid-template-columns: 1fr; }
-  .input-half { border-right: none; border-bottom: 1px solid var(--gray-50); }
+  .trust-bar { padding: 20px 24px; gap: 24px; flex-wrap: wrap; }
+  .two-col { grid-template-columns: 1fr; }
+  .half-input { border-right: none; border-bottom: 1px solid #f0f4f0; }
+  .proposal-output { padding: 28px 24px; }
 }
 </style>
 </head>
 <body>
 
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="ring"></div>
+<div class="progress" id="progress"></div>
+
 <!-- NAV -->
-<nav class="nav">
-  <div class="nav-logo">
-    <div class="nav-logo-mark">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M18.561 13.158c-1.102 0-2.135-.467-3.074-1.227l.228-1.076.008-.042c.207-1.143.849-3.06 2.839-3.06 1.492 0 2.703 1.212 2.703 2.703-.001 1.489-1.212 2.702-2.704 2.702zm0-8.14c-2.539 0-4.51 1.649-5.31 4.366-1.22-1.834-2.148-4.036-2.687-5.892H7.828v7.112c-.002 1.406-1.141 2.546-2.547 2.546-1.405 0-2.543-1.14-2.543-2.546V3.492H0v7.112c0 2.914 2.37 5.303 5.281 5.303 2.913 0 5.283-2.389 5.283-5.303v-1.19c.529 1.107 1.182 2.229 1.974 3.221l-1.673 7.873h2.797l1.213-5.71c1.063.679 2.285 1.109 3.686 1.109 3 0 5.439-2.452 5.439-5.45 0-3-2.439-5.439-5.439-5.439z"/>
-      </svg>
+<nav class="nav" id="nav">
+  <a class="nav-logo" href="#">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M18.561 13.158c-1.102 0-2.135-.467-3.074-1.227l.228-1.076.008-.042c.207-1.143.849-3.06 2.839-3.06 1.492 0 2.703 1.212 2.703 2.703-.001 1.489-1.212 2.702-2.704 2.702zm0-8.14c-2.539 0-4.51 1.649-5.31 4.366-1.22-1.834-2.148-4.036-2.687-5.892H7.828v7.112c-.002 1.406-1.141 2.546-2.547 2.546-1.405 0-2.543-1.14-2.543-2.546V3.492H0v7.112c0 2.914 2.37 5.303 5.281 5.303 2.913 0 5.283-2.389 5.283-5.303v-1.19c.529 1.107 1.182 2.229 1.974 3.221l-1.673 7.873h2.797l1.213-5.71c1.063.679 2.285 1.109 3.686 1.109 3 0 5.439-2.452 5.439-5.45 0-3-2.439-5.439-5.439-5.439z"/></svg>
     </div>
-    <div class="nav-logo-text">Proposal<span>Craft</span></div>
-  </div>
+    <div class="logo-text">Proposal<span>Craft</span></div>
+  </a>
   <div class="nav-right">
-    <div class="nav-stat">AI Powered</div>
-    <div class="nav-tag">Free to Use</div>
+    <div class="nav-pill">Free to Use</div>
+    <button class="nav-cta" onclick="document.querySelector('.app-section').scrollIntoView({behavior:'smooth'})">Try it Free</button>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-dots"></div>
-  <div class="hero-glow"></div>
+  <div class="hero-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
   <div class="hero-inner">
     <div class="hero-left">
-      <div class="hero-eyebrow">Built for Upwork Freelancers</div>
-      <h1>Write proposals that<br><em>win clients</em> on Upwork</h1>
-      <p class="hero-sub">Stop losing jobs to weaker freelancers with better proposals. Our AI writes Upwork-optimized proposals that speak directly to what clients want to hear.</p>
-      <div class="hero-features">
-        <div class="hero-feature">
-          <div class="feature-check">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          Matches Upwork's proposal best practices
+      <div class="hero-eyebrow">
+        <div class="eyebrow-dot"></div>
+        Built for Upwork Freelancers
+      </div>
+      <h1>Write proposals that<br><em>win clients</em><br>on Upwork</h1>
+      <p class="hero-sub">Stop losing jobs to weaker freelancers with better proposals. AI writes Upwork-optimized proposals that speak directly to what clients want to hear.</p>
+      <div class="hero-buttons">
+        <button class="btn-primary" onclick="document.querySelector('.app-section').scrollIntoView({behavior:'smooth'})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Generate Free Proposal
+        </button>
+        <button class="btn-ghost">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          See Example
+        </button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="stat-num">10s</span>
+          <span class="stat-label">Generate</span>
         </div>
-        <div class="hero-feature">
-          <div class="feature-check">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          Addresses client pain points directly
+        <div class="stat-divider"></div>
+        <div class="hero-stat">
+          <span class="stat-num">100%</span>
+          <span class="stat-label">Free</span>
         </div>
-        <div class="hero-feature">
-          <div class="feature-check">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          Sounds human, not AI-generated
-        </div>
-        <div class="hero-feature">
-          <div class="feature-check">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          Generated in under 10 seconds
+        <div class="stat-divider"></div>
+        <div class="hero-stat">
+          <span class="stat-num">AI</span>
+          <span class="stat-label">Powered</span>
         </div>
       </div>
     </div>
-    <div class="hero-card">
-      <div class="hero-card-label">Sample Proposal — Python Developer</div>
-      <div class="sample-proposal">"I noticed you need a Python developer who can build a scalable REST API quickly. I've done exactly this — delivering a similar project for a SaaS client in under 2 weeks, handling 50K+ daily requests. I'd love to walk you through my approach..."</div>
-      <div class="hero-card-footer">
-        <div class="hero-card-stat">
-          <span class="hero-card-num">10s</span>
-          <span class="hero-card-text">To Generate</span>
+
+    <div class="hero-right">
+      <div class="floating-card">
+        <div class="card-header">
+          <div class="card-badge">Live Preview</div>
+          <div class="card-dots">
+            <div class="card-dot"></div>
+            <div class="card-dot"></div>
+            <div class="card-dot"></div>
+          </div>
         </div>
-        <div class="hero-card-stat">
-          <span class="hero-card-num">100%</span>
-          <span class="hero-card-text">Free</span>
-        </div>
-        <div class="hero-card-stat">
-          <span class="hero-card-num">AI</span>
-          <span class="hero-card-text">Optimized</span>
+        <div class="proposal-text" id="typingText"></div>
+        <div class="card-metrics">
+          <div class="card-metric">
+            <span class="card-metric-num">98%</span>
+            <span class="card-metric-label">Match Score</span>
+          </div>
+          <div class="card-metric">
+            <span class="card-metric-num">147</span>
+            <span class="card-metric-label">Words</span>
+          </div>
+          <div class="card-metric">
+            <span class="card-metric-num">A+</span>
+            <span class="card-metric-label">Tone</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- MAIN -->
-<section class="main">
-  <div class="section-header">
-    <div class="section-eyebrow">Generate Proposal</div>
-    <div class="section-title">Fill in your details below</div>
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item">
+    <div class="trust-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    </div>
+    Instant Generation
   </div>
+  <div class="trust-item">
+    <div class="trust-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    </div>
+    Upwork Optimized
+  </div>
+  <div class="trust-item">
+    <div class="trust-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </div>
+    Sounds Human
+  </div>
+  <div class="trust-item">
+    <div class="trust-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    </div>
+    Free Forever
+  </div>
+</div>
 
-  <div class="form-layout">
+<!-- APP SECTION -->
+<section class="app-section reveal" id="appSection">
+  <div class="section-tag">Generate Proposal</div>
+  <div class="section-title">Fill in your details below</div>
+
+  <div class="form-grid">
     <div class="input-stack">
 
-      <!-- JOB POST -->
-      <div class="input-card">
-        <div class="input-card-header">
-          <div class="input-card-left">
-            <div class="input-icon">
+      <div class="input-card reveal">
+        <div class="card-top">
+          <div class="card-top-left">
+            <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
             </div>
             <div>
-              <div class="input-label">Upwork Job Post</div>
-              <div class="input-sublabel">Paste the full client job description</div>
+              <div class="card-label">Upwork Job Post</div>
+              <div class="card-sublabel">Paste the full client description</div>
             </div>
           </div>
-          <div class="input-badge" id="job_count">0 chars</div>
+          <div class="char-badge" id="jc">0 chars</div>
         </div>
-        <textarea id="job_post"
-          placeholder="Paste the Upwork job description here. Include everything — the more detail the better the proposal.
+        <textarea id="job_post" placeholder="Paste the Upwork job description here. The more detail you include, the better your proposal will be.
 
-Example: Looking for an experienced Python developer to build a REST API for our mobile app. Must have experience with Flask or FastAPI, PostgreSQL, and AWS deployment..."
-          oninput="document.getElementById('job_count').textContent = this.value.length + ' chars'"></textarea>
+Example: Looking for an experienced Python developer to build a REST API for our mobile app. Must have experience with Flask, PostgreSQL, and AWS..." oninput="document.getElementById('jc').textContent=this.value.length+' chars'"></textarea>
       </div>
 
-      <!-- SKILLS -->
-      <div class="input-card">
-        <div class="input-card-header">
-          <div class="input-card-left">
-            <div class="input-icon">
+      <div class="input-card reveal">
+        <div class="card-top">
+          <div class="card-top-left">
+            <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </div>
             <div>
-              <div class="input-label">Your Skills & Experience</div>
-              <div class="input-sublabel">What makes you the right person</div>
+              <div class="card-label">Your Skills & Experience</div>
+              <div class="card-sublabel">What makes you the right person</div>
             </div>
           </div>
-          <div class="input-badge" id="skills_count">0 chars</div>
+          <div class="char-badge" id="sc">0 chars</div>
         </div>
-        <textarea id="freelancer_skills"
-          placeholder="Describe your relevant experience and skills...
+        <textarea id="freelancer_skills" placeholder="Describe your relevant skills and experience...
 
-Example: 3 years Python development, built 5 REST APIs for SaaS companies, expert in Flask and FastAPI, deployed on AWS, strong with PostgreSQL and MongoDB..."
-          oninput="document.getElementById('skills_count').textContent = this.value.length + ' chars'"></textarea>
+Example: 3 years Python, built 5 REST APIs for SaaS companies, expert in Flask and FastAPI, AWS certified, strong with PostgreSQL..." oninput="document.getElementById('sc').textContent=this.value.length+' chars'"></textarea>
       </div>
 
-      <!-- RATE + EXPERIENCE -->
-      <div class="input-card">
-        <div class="input-card-header">
-          <div class="input-card-left">
-            <div class="input-icon">
+      <div class="input-card reveal">
+        <div class="card-top">
+          <div class="card-top-left">
+            <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             </div>
             <div>
-              <div class="input-label">Rate & Experience Level</div>
-              <div class="input-sublabel">Optional but improves results</div>
+              <div class="card-label">Rate & Experience</div>
+              <div class="card-sublabel">Optional — improves results</div>
             </div>
           </div>
         </div>
-        <div class="input-row">
-          <div class="input-half">
-            <div class="input-half-label">Your Hourly Rate</div>
-            <input type="text" id="hourly_rate" placeholder="e.g. $25/hr or Fixed $500">
+        <div class="two-col">
+          <div class="half-input">
+            <div class="half-label">Your Rate</div>
+            <input type="text" id="hourly_rate" placeholder="e.g. $30/hr or Fixed $800">
           </div>
-          <div class="input-half">
-            <div class="input-half-label">Years of Experience</div>
+          <div class="half-input">
+            <div class="half-label">Years of Experience</div>
             <input type="text" id="experience" placeholder="e.g. 3 years">
           </div>
         </div>
@@ -1101,138 +1471,127 @@ Example: 3 years Python development, built 5 REST APIs for SaaS companies, exper
 
     <!-- SIDEBAR -->
     <div class="sidebar">
-      <div class="generate-card">
-        <div class="generate-card-title">Ready to generate?</div>
-        <div class="generate-card-sub">Fill in the job post and your skills above for the best result. Rate and experience are optional.</div>
-
-        <button class="generate-btn" onclick="generate()" id="generateBtn">
+      <div class="gen-card reveal">
+        <div class="gen-title">Ready to generate?</div>
+        <div class="gen-sub">Fill in the job post and your skills for the best result.</div>
+        <button class="gen-btn" onclick="generate()" id="genBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           <span id="btnText">Generate Proposal</span>
         </button>
-
-        <div class="generate-divider">
-          <div class="generate-divider-line"></div>
-          <div class="generate-divider-text">Tone</div>
-          <div class="generate-divider-line"></div>
+        <div class="divider">
+          <div class="divider-line"></div>
+          <div class="divider-text">Tone</div>
+          <div class="divider-line"></div>
         </div>
-
-        <div class="tone-options">
-          <div class="tone-option selected" onclick="selectTone(this, 'professional')">Professional</div>
-          <div class="tone-option" onclick="selectTone(this, 'confident')">Confident</div>
-          <div class="tone-option" onclick="selectTone(this, 'friendly')">Friendly</div>
-          <div class="tone-option" onclick="selectTone(this, 'concise')">Concise</div>
+        <div class="tone-grid">
+          <div class="tone-btn active" onclick="setTone(this,'professional')">Professional</div>
+          <div class="tone-btn" onclick="setTone(this,'confident')">Confident</div>
+          <div class="tone-btn" onclick="setTone(this,'friendly')">Friendly</div>
+          <div class="tone-btn" onclick="setTone(this,'concise')">Concise</div>
         </div>
       </div>
 
       <div class="tips-card">
-        <div class="tips-card-title">Winning Proposal Tips</div>
-        <div class="tip-item">
-          <div class="tip-dot"></div>
-          <div class="tip-text">Start with the client's problem, not your skills. Show you understand what they need.</div>
+        <div class="tips-title">Winning Proposal Tips</div>
+        <div class="tip">
+          <div class="tip-line"></div>
+          <div class="tip-text">Start with the client's problem — not your skills. Show you understand their need first.</div>
         </div>
-        <div class="tip-item">
-          <div class="tip-dot"></div>
-          <div class="tip-text">Keep it under 200 words. Clients skim — make every sentence count.</div>
+        <div class="tip">
+          <div class="tip-line"></div>
+          <div class="tip-text">Keep it under 200 words. Clients skim fast — make every sentence count.</div>
         </div>
-        <div class="tip-item">
-          <div class="tip-dot"></div>
-          <div class="tip-text">Mention one specific detail from their job post. It proves you actually read it.</div>
+        <div class="tip">
+          <div class="tip-line"></div>
+          <div class="tip-text">Reference one specific detail from their post. It proves you actually read it.</div>
         </div>
-        <div class="tip-item">
-          <div class="tip-dot"></div>
-          <div class="tip-text">End with a clear question or call to action to invite a reply.</div>
+        <div class="tip">
+          <div class="tip-line"></div>
+          <div class="tip-text">End with a clear question that invites a reply. Always close with action.</div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- LOADING -->
-  <div class="loading-wrap" id="loading">
+  <div class="loading-area" id="loading">
     <div class="loading-card">
-      <div class="loading-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+      <div class="loader-ring">
+        <div class="loader-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
       </div>
       <div class="loading-title">Writing your winning proposal...</div>
-      <div class="loading-steps">
-        <div class="loading-step">
-          <div class="loading-step-dot"></div>
-          Analysing job
-        </div>
-        <div class="loading-step">
-          <div class="loading-step-dot"></div>
-          Matching skills
-        </div>
-        <div class="loading-step">
-          <div class="loading-step-dot"></div>
-          Writing proposal
-        </div>
+      <div class="loading-sub">Analysing the job, matching your profile, crafting something great</div>
+      <div class="loading-progress-bar">
+        <div class="loading-progress-fill" id="progressFill"></div>
       </div>
     </div>
   </div>
 
   <!-- OUTPUT -->
-  <div class="output-wrap" id="outputWrap">
+  <div class="output-area" id="output">
     <div class="output-card">
-      <div class="output-header">
-        <div class="output-header-left">
-          <div class="output-status">Proposal Ready</div>
+      <div class="output-bar">
+        <div class="output-bar-left">
+          <div class="output-live">Proposal Ready</div>
           <div class="output-score">
-            <div class="score-bar">
+            <div class="score-dots">
               <div class="score-dot"></div>
               <div class="score-dot"></div>
               <div class="score-dot"></div>
               <div class="score-dot"></div>
-              <div class="score-dot empty"></div>
+              <div class="score-dot off"></div>
             </div>
             Strong Match
           </div>
         </div>
-        <div class="output-actions">
-          <button class="action-btn btn-outline" onclick="generate()">
+        <div class="output-btns">
+          <button class="out-btn out-btn-ghost" onclick="generate()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
             Regenerate
           </button>
-          <button class="action-btn btn-green" onclick="copyText()" id="copyBtn">
+          <button class="out-btn out-btn-solid" onclick="copyProposal()" id="copyBtn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             Copy Proposal
           </button>
         </div>
       </div>
-      <div class="proposal-body" id="output_text"></div>
+      <div class="proposal-output" id="proposalText"></div>
       <div class="output-footer">
-        <div class="output-footer-text">Ready to paste directly into Upwork</div>
-        <div class="word-count" id="word_count">0 words</div>
+        <div class="footer-note">Ready to paste directly into Upwork</div>
+        <div class="word-pill" id="wordCount">0 words</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- WHY SECTION -->
-<section class="why-section">
+<!-- WHY -->
+<section class="why">
   <div class="why-inner">
-    <div class="section-eyebrow">Why ProposalCraft</div>
+    <div class="section-tag">Why ProposalCraft</div>
     <div class="section-title">Built specifically for Upwork success</div>
     <div class="why-grid">
-      <div class="why-cell">
+      <div class="why-cell reveal">
         <div class="why-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         </div>
         <div class="why-title">Upwork Optimized</div>
         <div class="why-desc">Every proposal follows Upwork's proven best practices — addressing client pain points, showing relevant experience, and ending with a clear call to action.</div>
       </div>
-      <div class="why-cell">
+      <div class="why-cell reveal">
         <div class="why-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         </div>
         <div class="why-title">Instant Generation</div>
-        <div class="why-desc">Stop spending 30 minutes on every proposal. Generate a tailored, professional proposal in under 10 seconds and apply to more jobs faster.</div>
+        <div class="why-desc">Stop spending 30 minutes per proposal. Get a tailored, professional proposal in under 10 seconds and apply to more jobs faster than your competition.</div>
       </div>
-      <div class="why-cell">
+      <div class="why-cell reveal">
         <div class="why-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         <div class="why-title">Sounds Human</div>
-        <div class="why-desc">Clients can spot AI-written proposals immediately. Ours are crafted to sound natural, confident, and genuine — like a top-rated freelancer wrote it.</div>
+        <div class="why-desc">Clients can spot AI proposals instantly. Ours are crafted to sound natural, confident, and genuine — like a top-rated freelancer wrote every word.</div>
       </div>
     </div>
   </div>
@@ -1245,67 +1604,159 @@ Example: 3 years Python development, built 5 REST APIs for SaaS companies, exper
 </footer>
 
 <script>
-let selectedTone = 'professional';
+// CURSOR
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
 
-function selectTone(el, tone) {
-  document.querySelectorAll('.tone-option').forEach(t => t.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedTone = tone;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx - 5 + 'px';
+  cursor.style.top = my - 5 + 'px';
+});
+
+(function animRing() {
+  rx += (mx - rx - 16) * 0.1;
+  ry += (my - ry - 16) * 0.1;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+})();
+
+document.querySelectorAll('button, a, .tone-btn, .input-card, .why-cell').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(2.5)'; ring.style.transform = 'scale(1.3)'; });
+  el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; ring.style.transform = 'scale(1)'; });
+});
+
+// PROGRESS BAR
+window.addEventListener('scroll', () => {
+  const p = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress').style.width = p + '%';
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// SCROLL REVEAL
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('revealed'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// TIPS REVEAL
+const tipsObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.tip').forEach((t, i) => {
+        setTimeout(() => t.classList.add('show'), i * 150);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelector('.tips-card') && tipsObs.observe(document.querySelector('.tips-card'));
+
+// TYPING ANIMATION
+const proposals = [
+  "I noticed you need a Python developer who can build a scalable REST API quickly. I've done exactly this — delivering a similar API for a SaaS client in 2 weeks that now handles 50K+ daily requests. I'd love to walk you through my approach...",
+  "Your project immediately caught my attention because I specialize in exactly this — React dashboards with real-time data. I built three similar tools last year, one of which reduced client reporting time by 70%. Can I share a quick demo?"
+];
+
+let pIdx = 0, cIdx = 0, typing = true;
+const typingEl = document.getElementById('typingText');
+
+function typeLoop() {
+  if (!typingEl) return;
+  const txt = proposals[pIdx];
+  if (typing) {
+    if (cIdx < txt.length) {
+      typingEl.innerHTML = txt.slice(0, ++cIdx) + '<span class="typing-cursor"></span>';
+      setTimeout(typeLoop, 28);
+    } else {
+      typing = false;
+      setTimeout(typeLoop, 2800);
+    }
+  } else {
+    if (cIdx > 0) {
+      typingEl.innerHTML = txt.slice(0, --cIdx) + '<span class="typing-cursor"></span>';
+      setTimeout(typeLoop, 12);
+    } else {
+      typing = true;
+      pIdx = (pIdx + 1) % proposals.length;
+      setTimeout(typeLoop, 400);
+    }
+  }
 }
 
+setTimeout(typeLoop, 1200);
+
+// TONE
+let tone = 'professional';
+function setTone(el, t) {
+  document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  tone = t;
+}
+
+// GENERATE
 async function generate() {
-  const jobPost = document.getElementById('job_post').value.trim();
+  const job = document.getElementById('job_post').value.trim();
   const skills = document.getElementById('freelancer_skills').value.trim();
   const rate = document.getElementById('hourly_rate').value.trim();
-  const experience = document.getElementById('experience').value.trim();
+  const exp = document.getElementById('experience').value.trim();
 
-  if (!jobPost || !skills) {
-    alert('Please fill in the job post and your skills to generate a proposal.');
+  if (!job || !skills) {
+    alert('Please fill in the job post and your skills.');
     return;
   }
 
-  const btn = document.getElementById('generateBtn');
+  const btn = document.getElementById('genBtn');
   const loading = document.getElementById('loading');
-  const outputWrap = document.getElementById('outputWrap');
+  const output = document.getElementById('output');
 
   btn.disabled = true;
   document.getElementById('btnText').textContent = 'Generating...';
-  loading.classList.add('visible');
-  outputWrap.classList.remove('visible');
+  loading.classList.add('show');
+  output.classList.remove('show');
+
+  // Reset progress animation
+  const fill = document.getElementById('progressFill');
+  fill.style.animation = 'none';
+  fill.offsetHeight;
+  fill.style.animation = 'loadProgress 3s ease-in-out forwards';
 
   try {
     const res = await fetch('/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        job_description: jobPost,
-        skills: skills,
-        rate: rate,
-        experience: experience,
-        tone: selectedTone
-      })
+      body: JSON.stringify({ job_description: job, skills, rate, experience: exp, tone })
     });
 
     const data = await res.json();
     const text = data.cover_letter;
-    document.getElementById('output_text').textContent = text;
-    document.getElementById('word_count').textContent = text.split(/\s+/).filter(Boolean).length + ' words';
-    loading.classList.remove('visible');
-    outputWrap.classList.add('visible');
-    outputWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    document.getElementById('proposalText').textContent = text;
+    document.getElementById('wordCount').textContent = text.split(/\s+/).filter(Boolean).length + ' words';
+
+    loading.classList.remove('show');
+    output.classList.add('show');
+    output.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   } catch (err) {
     alert('Something went wrong. Please try again.');
-    loading.classList.remove('visible');
+    loading.classList.remove('show');
   }
 
   btn.disabled = false;
   document.getElementById('btnText').textContent = 'Generate Proposal';
 }
 
-function copyText() {
-  const text = document.getElementById('output_text').textContent;
-  navigator.clipboard.writeText(text);
+// COPY
+function copyProposal() {
+  navigator.clipboard.writeText(document.getElementById('proposalText').textContent);
   const btn = document.getElementById('copyBtn');
   btn.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
   btn.classList.add('copied');
