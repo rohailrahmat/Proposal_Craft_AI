@@ -4,13 +4,11 @@ from google import genai
 
 app = Flask(__name__)
 
-GEMINI_API_KEY = "PASTE_YOUR_KEY_HERE"
-client = genai.Client(api_key=GEMINI_API_KEY)
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 @app.route("/")
 def home():
     return render_template("index.html")
-
 @app.route("/generate", methods=["POST"])
 def generate():
     data = request.json
@@ -141,4 +139,5 @@ Write the proposal now."""
     return jsonify({"cover_letter": response.text})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
