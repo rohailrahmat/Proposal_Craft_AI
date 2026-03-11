@@ -17,32 +17,53 @@ def generate():
     skills = data.get("skills", "")
     rate = data.get("rate", "")
     experience = data.get("experience", "")
-    tone = data.get("tone", "professional")
 
-    prompt = f"""You are an expert Upwork freelancer who has earned over $500K on the platform. Write a winning Upwork proposal for the following job.
+    prompt = f"""You are an elite Upwork freelancer who has earned over $500K on the platform with a 100% Job Success Score.
 
-Job Post:
+A client has posted this job:
+---
 {job_description}
+---
 
-Freelancer's Skills and Experience:
+The freelancer's skills and background:
+---
 {skills}
+---
 
-{f"Hourly Rate / Budget: {rate}" if rate else ""}
-{f"Years of Experience: {experience}" if experience else ""}
+{f"Freelancer's rate: {rate}" if rate else ""}
+{f"Years of experience: {experience}" if experience else ""}
 
-Tone: {tone}
+Before writing, deeply analyse the client's job post for these signals:
 
-Write a {tone} Upwork proposal that:
-1. Opens with the client's specific problem or need — NOT with "I am a developer" or "I have X years experience"
-2. Shows you understood the job post by referencing specific details from it
-3. Briefly demonstrates relevant experience with a concrete example or result
-4. Mentions the rate/timeline naturally if provided
-5. Ends with a clear, specific question that invites a response
-6. Is between 100-200 words — concise and punchy
-7. Sounds completely human — no buzzwords, no fluff, no AI-speak
-8. Follows Upwork best practices that top-rated freelancers use
+TONE SIGNALS — Read how the client writes:
+- Casual language, slang, emojis, relaxed phrasing = write in a warm, conversational, human tone
+- Formal language, corporate terms, structured requirements = write in a polished, professional tone
+- Urgent language, "ASAP", "immediately", "deadline" = write with urgency and decisiveness
+- Detailed technical specs = write in a technical, precise, confident tone
+- Vague or exploratory post = write in a collaborative, curious, idea-generating tone
 
-Do not start with "Dear" or "Hello". Do not use placeholder text. Write the proposal ready to paste directly into Upwork."""
+LENGTH SIGNALS — Decide the right length:
+- Simple, short job post with clear requirements = short proposal (80-120 words). Don't over-explain.
+- Complex project with multiple requirements = medium proposal (150-200 words)
+- Long detailed spec or enterprise-level project = detailed proposal (200-250 words)
+- Quick task or micro-job = very short (50-80 words), be direct and punchy
+
+STRUCTURE — Always follow this psychology:
+1. First sentence: Mirror the client's biggest pain point or goal. Make them feel understood immediately.
+2. Middle: Show you have done this exact thing before with a specific, believable result or example.
+3. Rate/timeline: Weave it in naturally only if it strengthens the proposal.
+4. Close: End with ONE specific question that is relevant to their project. This forces a reply.
+
+STRICT RULES:
+- Never start with "I", "Hello", "Dear", "Hi", or "My name is"
+- Never use buzzwords: passionate, dedicated, hardworking, expert, guru, ninja, rockstar
+- Never use placeholder text or brackets
+- Never sound like AI — no perfect grammar-robot sentences
+- Reference at least one specific detail from their job post to prove you read it
+- Match the client's energy exactly — if they're excited, be excited. If they're serious, be serious.
+- The proposal must feel like it was written specifically for this one client and no one else
+
+Write only the proposal text. Nothing else. No labels, no explanations."""
 
     response = client.models.generate_content(
         model="gemini-2.5-flash",
