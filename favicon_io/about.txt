@@ -1,6 +1,6 @@
 This favicon was generated using the following font:
 
-- Font Title: Fraunces
+- Font Title: Montserrat
 - Font Author: undefined
-- Font Source: https://fonts.gstatic.com/s/fraunces/v37/6NUh8FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0K7iN7hzFUPJH58nib1603gg7S2nfgRYIcaRyjDvTShUtWNg.ttf
+- Font Source: https://fonts.gstatic.com/s/montserrat/v30/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCvr70w-Y3tcoqK5.ttf
 - Font License: undefined)
