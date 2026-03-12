@@ -3,1565 +3,1049 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ProposalCraft — Win More Upwork Jobs</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
-<link rel="icon" type="image/x-icon" href="../favicon_io/favicon.ico">
+<title>ProposalCraft — AI Proposal Writer for Upwork</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --green: #14a800;
-  --green-dark: #0d7a00;
-  --green-light: #e8f5e8;
-  --green-glow: rgba(20,168,0,0.15);
-  --navy: #001e00;
+  --g: #14a800;
+  --g2: #0d8a00;
+  --g3: #0a6e00;
+  --glow: rgba(20,168,0,0.18);
+  --glowb: rgba(20,168,0,0.08);
+  --navy: #020f02;
+  --navy2: #071507;
+  --navy3: #0e220e;
   --white: #ffffff;
-  --off: #f5f9f5;
-  --border: #dde8dd;
-  --text: #1a2e1a;
-  --muted: #6b7e6b;
+  --off: #f4f8f4;
+  --card: #ffffff;
+  --border: #e2ece2;
+  --border2: #d0ddd0;
+  --text: #111c11;
+  --text2: #3a4f3a;
+  --muted: #7a8f7a;
+  --light: #b8ccb8;
+  --tag-bg: rgba(20,168,0,0.08);
+  --tag-border: rgba(20,168,0,0.2);
+  --input-focus: rgba(20,168,0,0.06);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.1);
+  --shadow-glow: 0 0 0 3px rgba(20,168,0,0.12);
+  --r: 14px;
+  --r-sm: 8px;
+  --r-lg: 20px;
+  --transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; font-size: 16px; }
 
 body {
   background: var(--off);
   color: var(--text);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  overflow-x: hidden;
+  font-family: 'DM Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  min-height: 100vh;
 }
 
-/* CURSOR */
-.cursor {
-  width: 10px; height: 10px;
-  background: var(--green);
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--g); }
+
+/* ─── PROGRESS BAR ─── */
+#topbar {
+  position: fixed; top:0; left:0;
+  height: 2.5px;
+  background: linear-gradient(90deg, var(--g), #7fff00, var(--g));
+  background-size: 200% 100%;
+  animation: barShimmer 2s linear infinite;
+  z-index: 1000;
+  transition: width 0.1s ease;
+  box-shadow: 0 0 10px rgba(20,168,0,0.5);
+}
+@keyframes barShimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* ─── CURSOR ─── */
+.cursor-dot {
+  width: 8px; height: 8px;
+  background: var(--g);
   border-radius: 50%;
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  transition: transform 0.1s ease;
-  mix-blend-mode: multiply;
+  position: fixed; pointer-events: none;
+  z-index: 9999; transform: translate(-50%,-50%);
+  transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease;
 }
 .cursor-ring {
-  width: 32px; height: 32px;
-  border: 1.5px solid rgba(20,168,0,0.4);
+  width: 28px; height: 28px;
+  border: 1.5px solid rgba(20,168,0,0.35);
   border-radius: 50%;
-  position: fixed;
-  pointer-events: none;
-  z-index: 9998;
-  transition: all 0.12s ease;
+  position: fixed; pointer-events: none;
+  z-index: 9998; transform: translate(-50%,-50%);
+  transition: all 0.15s ease;
 }
 
-/* PROGRESS */
-.progress {
-  position: fixed;
-  top: 0; left: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--green), #7fff00);
-  z-index: 300;
-  transition: width 0.1s ease;
-  box-shadow: 0 0 8px rgba(20,168,0,0.5);
-}
-
-/* NAV */
+/* ─── NAV ─── */
 .nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 200;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 60px;
-  background: rgba(245,249,245,0.88);
-  backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(221,232,221,0.6);
-  transition: all 0.3s ease;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  background: rgba(244,248,244,0.92);
+  backdrop-filter: blur(20px) saturate(1.8);
+  border-bottom: 1px solid rgba(226,236,226,0.7);
+  transition: var(--transition);
 }
-
-.nav.scrolled {
-  background: rgba(245,249,245,0.98);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+.nav.solid {
+  background: rgba(244,248,244,0.98);
+  box-shadow: 0 1px 0 var(--border), var(--shadow-sm);
 }
-
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.nav-brand {
+  display: flex; align-items: center; gap: 9px;
   text-decoration: none;
 }
-
-.logo-mark {
-  width: 34px; height: 34px;
-  background: var(--green);
+.nav-mark {
+  width: 32px; height: 32px;
+  background: var(--g);
   border-radius: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: grid; place-items: center;
+  transition: var(--transition);
+  position: relative; overflow: hidden;
 }
-
-.nav-logo:hover .logo-mark {
-  transform: rotate(-8deg) scale(1.08);
-  box-shadow: 0 4px 16px rgba(20,168,0,0.3);
+.nav-mark::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
 }
-
-.logo-mark svg { width: 18px; height: 18px; fill: white; }
-
-.logo-text {
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--navy);
-  letter-spacing: -0.03em;
+.nav-mark:hover { transform: rotate(-6deg) scale(1.08); box-shadow: 0 4px 14px var(--glow); }
+.nav-mark svg { width: 16px; height: 16px; fill: white; position: relative; z-index: 1; }
+.nav-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px; font-weight: 800;
+  color: var(--text); letter-spacing: -0.03em;
 }
-
-.logo-text span { color: var(--green); }
-
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.nav-name span { color: var(--g); }
+.nav-right { display: flex; align-items: center; gap: 14px; }
+.nav-badge {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--g); background: var(--tag-bg);
+  border: 1px solid var(--tag-border);
+  padding: 4px 12px; border-radius: 20px;
 }
-
-.nav-pill {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--green);
-  background: var(--green-light);
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1px solid rgba(20,168,0,0.2);
-  animation: pillPulse 3s ease-in-out infinite;
+.nav-badge span {
+  display: inline-block; width: 5px; height: 5px;
+  background: var(--g); border-radius: 50%;
+  margin-right: 5px; vertical-align: middle;
+  animation: pulse 2s infinite;
 }
-
-@keyframes pillPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(20,168,0,0.2); }
-  50% { box-shadow: 0 0 0 6px rgba(20,168,0,0); }
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(20,168,0,0.5); }
+  50% { box-shadow: 0 0 0 4px rgba(20,168,0,0); }
 }
-
-.nav-cta {
-  padding: 9px 20px;
-  background: var(--green);
-  color: white;
-  font-size: 12px;
-  font-weight: 700;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+.nav-btn {
+  padding: 8px 18px;
+  background: var(--g); color: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 600;
+  border: none; border-radius: var(--r-sm);
+  cursor: pointer; transition: var(--transition);
 }
+.nav-btn:hover { background: var(--g2); transform: translateY(-1px); box-shadow: 0 4px 12px var(--glow); }
 
-.nav-cta:hover {
-  background: var(--green-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(20,168,0,0.25);
-}
-
-/* HERO */
+/* ─── HERO ─── */
 .hero {
+  background: var(--navy);
   min-height: 100vh;
-  background: linear-gradient(160deg, var(--navy) 0%, #0a2a0a 45%, #143614 100%);
-  display: flex;
-  align-items: center;
-  padding: 100px 60px 80px;
-  position: relative;
-  overflow: hidden;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 100px 48px 60px;
+  position: relative; overflow: hidden;
+  text-align: center;
 }
 
-/* Animated grid */
+/* Animated noise texture */
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+/* Grid */
 .hero-grid {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background-image:
-    linear-gradient(rgba(20,168,0,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(20,168,0,0.06) 1px, transparent 1px);
-  background-size: 48px 48px;
-  animation: gridSlide 20s linear infinite;
+    linear-gradient(rgba(20,168,0,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20,168,0,0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  animation: gridDrift 24s linear infinite;
+  z-index: 0;
 }
+@keyframes gridDrift { to { transform: translateY(56px); } }
 
-@keyframes gridSlide {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(48px); }
-}
-
-/* Floating orbs */
+/* Orbs */
 .orb {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  filter: blur(60px);
-  animation: orbFloat 8s ease-in-out infinite;
+  position: absolute; border-radius: 50%;
+  pointer-events: none; filter: blur(80px); z-index: 0;
+}
+.o1 { width:500px;height:500px; background:radial-gradient(circle,rgba(20,168,0,0.14) 0%,transparent 70%); top:-120px;right:-80px; animation:floatOrb 10s ease-in-out infinite; }
+.o2 { width:350px;height:350px; background:radial-gradient(circle,rgba(127,255,0,0.07) 0%,transparent 70%); bottom:-80px;left:-60px; animation:floatOrb 14s ease-in-out infinite reverse; }
+.o3 { width:200px;height:200px; background:radial-gradient(circle,rgba(20,168,0,0.1) 0%,transparent 70%); top:40%;left:50%; animation:floatOrb 8s ease-in-out infinite 2s; }
+@keyframes floatOrb {
+  0%,100% { transform:translateY(0) scale(1); }
+  50% { transform:translateY(-28px) scale(1.06); }
 }
 
-.orb-1 {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(20,168,0,0.18) 0%, transparent 70%);
-  top: -100px; right: 10%;
-  animation-delay: 0s;
-}
+.hero-inner { position:relative; z-index:1; max-width:760px; }
 
-.orb-2 {
-  width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(127,255,0,0.1) 0%, transparent 70%);
-  bottom: 10%; left: 5%;
-  animation-delay: 3s;
+.hero-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--g); background: rgba(20,168,0,0.1); border: 1px solid rgba(20,168,0,0.22);
+  padding: 6px 14px; border-radius: 20px; margin-bottom: 32px;
+  opacity: 0; animation: riseUp 0.7s 0.15s ease forwards;
 }
-
-.orb-3 {
-  width: 200px; height: 200px;
-  background: radial-gradient(circle, rgba(20,168,0,0.12) 0%, transparent 70%);
-  top: 40%; left: 40%;
-  animation-delay: 6s;
-}
-
-@keyframes orbFloat {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-30px) scale(1.05); }
-}
-
-.hero-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  align-items: center;
-  position: relative;
-  z-index: 1;
-}
-
-/* HERO LEFT */
-.hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--green);
-  background: rgba(20,168,0,0.1);
-  border: 1px solid rgba(20,168,0,0.25);
-  padding: 7px 14px;
-  border-radius: 20px;
-  margin-bottom: 28px;
-  opacity: 0;
-  animation: fadeUp 0.8s 0.2s ease forwards;
-}
-
-.eyebrow-dot {
-  width: 6px; height: 6px;
-  background: var(--green);
-  border-radius: 50%;
-  animation: blink 1.5s infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
+.chip-dot { width:5px;height:5px;background:var(--g);border-radius:50%;animation:blink 1.8s infinite; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.2} }
 
 .hero h1 {
-  font-family: 'Lora', serif;
-  font-size: clamp(40px, 5vw, 62px);
-  font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  color: white;
-  margin-bottom: 24px;
-  opacity: 0;
-  animation: fadeUp 0.8s 0.3s ease forwards;
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(38px, 6vw, 68px);
+  font-weight: 800; line-height: 1.05;
+  letter-spacing: -0.035em; color: white;
+  margin-bottom: 22px;
+  opacity: 0; animation: riseUp 0.7s 0.25s ease forwards;
 }
-
 .hero h1 em {
-  font-style: italic;
-  color: var(--green);
-  position: relative;
+  font-style: normal; color: var(--g);
+  position: relative; display: inline-block;
 }
-
 .hero h1 em::after {
   content: '';
-  position: absolute;
-  bottom: -4px; left: 0; right: 0;
+  position: absolute; bottom: -6px; left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--green), transparent);
+  background: linear-gradient(90deg, var(--g), transparent);
   border-radius: 2px;
 }
 
 .hero-sub {
-  font-size: 16px;
-  font-weight: 400;
-  color: rgba(255,255,255,0.5);
-  line-height: 1.8;
-  margin-bottom: 44px;
-  max-width: 460px;
-  opacity: 0;
-  animation: fadeUp 0.8s 0.4s ease forwards;
+  font-size: 16px; font-weight: 400; line-height: 1.8;
+  color: rgba(255,255,255,0.45); max-width: 520px; margin: 0 auto 44px;
+  opacity: 0; animation: riseUp 0.7s 0.35s ease forwards;
 }
 
-.hero-buttons {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  margin-bottom: 52px;
-  opacity: 0;
-  animation: fadeUp 0.8s 0.5s ease forwards;
+.hero-ctas {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  margin-bottom: 56px;
+  opacity: 0; animation: riseUp 0.7s 0.45s ease forwards;
 }
-
-.btn-primary {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 15px 28px;
-  background: var(--green);
-  color: white;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  position: relative;
-  overflow: hidden;
+.cta-main {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 28px;
+  background: var(--g); color: white;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  border: none; border-radius: var(--r-sm); cursor: pointer;
+  transition: var(--transition); position: relative; overflow: hidden;
 }
-
-.btn-primary::before {
+.cta-main::after {
   content: '';
-  position: absolute;
-  top: 0; left: -100%;
-  width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-  transition: left 0.5s ease;
+  position: absolute; top:0; left:-100%; width:100%; height:100%;
+  background: linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
+  transition: left 0.4s ease;
 }
+.cta-main:hover::after { left:100%; }
+.cta-main:hover { background:var(--g2); transform:translateY(-2px); box-shadow:0 8px 24px var(--glow); }
+.cta-main svg { width:15px;height:15px; }
 
-.btn-primary:hover::before { left: 100%; }
-
-.btn-primary:hover {
-  background: var(--green-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(20,168,0,0.35);
+.cta-sec {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 22px;
+  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6);
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.1); border-radius: var(--r-sm);
+  cursor: pointer; transition: var(--transition);
 }
+.cta-sec:hover { background:rgba(255,255,255,0.1); color:white; border-color:rgba(255,255,255,0.18); }
 
-.btn-primary svg { width: 16px; height: 16px; }
-
-.btn-ghost {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 15px 24px;
-  background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.7);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.25s ease;
+.hero-nums {
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  opacity: 0; animation: riseUp 0.7s 0.55s ease forwards;
 }
-
-.btn-ghost:hover {
-  background: rgba(255,255,255,0.1);
-  color: white;
-  border-color: rgba(255,255,255,0.2);
-}
-
-.hero-stats {
-  display: flex;
-  gap: 36px;
-  opacity: 0;
-  animation: fadeUp 0.8s 0.6s ease forwards;
-}
-
-.hero-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.stat-num {
-  font-family: 'Lora', serif;
-  font-size: 32px;
-  font-weight: 600;
-  color: white;
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
-}
-
-.stat-divider {
-  width: 1px;
-  background: rgba(255,255,255,0.1);
-  align-self: stretch;
-}
-
-/* HERO RIGHT - Floating Card */
-.hero-right {
-  opacity: 0;
-  animation: fadeLeft 0.8s 0.7s ease forwards;
-}
-
-@keyframes fadeLeft {
-  from { opacity: 0; transform: translateX(30px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-.floating-card {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 20px;
-  padding: 28px;
-  backdrop-filter: blur(20px);
-  animation: cardFloat 6s ease-in-out infinite;
-  position: relative;
-}
-
-@keyframes cardFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
-}
-
-.floating-card::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(20,168,0,0.3), transparent, rgba(20,168,0,0.1));
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  padding: 1px;
-  pointer-events: none;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.card-badge {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--green);
-  background: rgba(20,168,0,0.12);
-  border: 1px solid rgba(20,168,0,0.2);
-  padding: 4px 10px;
-  border-radius: 10px;
-}
-
-.card-dots {
-  display: flex;
-  gap: 5px;
-}
-
-.card-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-}
-
-.card-dot:nth-child(1) { background: #ff5f57; }
-.card-dot:nth-child(2) { background: #febc2e; }
-.card-dot:nth-child(3) { background: #28c840; }
-
-.proposal-text {
-  font-family: 'Lora', serif;
-  font-style: italic;
-  font-size: 14px;
-  color: rgba(255,255,255,0.7);
-  line-height: 1.9;
-  border-left: 2px solid var(--green);
-  padding-left: 16px;
-  margin-bottom: 20px;
-}
-
-.typing-cursor {
-  display: inline-block;
-  width: 2px;
-  height: 14px;
-  background: var(--green);
-  margin-left: 2px;
-  animation: cursorBlink 1s infinite;
-  vertical-align: middle;
-}
-
-@keyframes cursorBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-.card-metrics {
-  display: flex;
-  justify-content: space-between;
-  padding-top: 18px;
-  border-top: 1px solid rgba(255,255,255,0.07);
-}
-
-.card-metric {
+.hero-num {
+  padding: 0 36px;
+  border-right: 1px solid rgba(255,255,255,0.08);
   text-align: center;
 }
-
-.card-metric-num {
-  font-family: 'Lora', serif;
-  font-size: 22px;
-  font-weight: 600;
-  color: white;
-  display: block;
-  line-height: 1;
-  margin-bottom: 3px;
+.hero-num:last-child { border-right: none; }
+.num-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 30px; font-weight: 800;
+  color: white; line-height: 1;
+  margin-bottom: 5px; letter-spacing: -0.03em;
 }
-
-.card-metric-label {
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+.num-label {
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
   color: rgba(255,255,255,0.3);
 }
 
-/* TRUST BAR */
-.trust-bar {
+@keyframes riseUp {
+  from { opacity:0; transform:translateY(20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+/* ─── STRIP ─── */
+.strip {
   background: white;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  padding: 20px 60px;
-  display: flex;
-  justify-content: center;
-  gap: 48px;
+  padding: 18px 48px;
+  display: flex; align-items: center; justify-content: center; gap: 48px;
   overflow: hidden;
 }
-
-.trust-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--muted);
-  white-space: nowrap;
-  transition: color 0.2s ease;
+.strip-item {
+  display: flex; align-items: center; gap: 9px;
+  font-size: 12px; font-weight: 500; color: var(--muted);
+  white-space: nowrap; transition: var(--transition);
 }
+.strip-item:hover { color: var(--g); }
+.strip-item svg { width:14px;height:14px;stroke:var(--g); }
 
-.trust-item:hover { color: var(--green); }
-
-.trust-icon {
-  width: 32px; height: 32px;
-  background: var(--green-light);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
-}
-
-.trust-item:hover .trust-icon { transform: scale(1.1); }
-
-.trust-icon svg {
-  width: 15px; height: 15px;
-  stroke: var(--green);
-}
-
-/* MAIN APP SECTION */
-.app-section {
-  padding: 80px 60px 100px;
-  max-width: 1200px;
+/* ─── MAIN APP ─── */
+.main {
+  max-width: 1360px;
   margin: 0 auto;
+  padding: 60px 48px 80px;
 }
 
-.section-tag {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--green);
-  margin-bottom: 8px;
+.main-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 28px;
 }
-
-.section-title {
-  font-family: 'Lora', serif;
-  font-size: 32px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+.main-title-group {}
+.main-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--g); margin-bottom: 6px;
+}
+.main-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px; font-weight: 800; letter-spacing: -0.03em;
   color: var(--text);
-  margin-bottom: 48px;
 }
+.main-hint {
+  font-size: 12px; color: var(--muted);
+  background: white; border: 1px solid var(--border);
+  padding: 6px 14px; border-radius: 20px;
+  display: flex; align-items: center; gap: 6px;
+}
+.main-hint svg { width:12px;height:12px;stroke:var(--g); }
 
-/* FORM */
-.form-grid {
+/* ─── SPLIT LAYOUT ─── */
+.split {
   display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 24px;
+  grid-template-columns: 1fr 420px;
+  gap: 20px;
   align-items: start;
 }
 
-.input-stack { display: flex; flex-direction: column; gap: 16px; }
+/* ─── LEFT PANEL ─── */
+.left-panel { display: flex; flex-direction: column; gap: 14px; }
 
-/* INPUT CARDS */
-.input-card {
-  background: white;
+/* ─── FIELD CARD ─── */
+.field-card {
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--r);
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-  transition: all 0.3s ease;
-  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+.field-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.field-card:focus-within {
+  border-color: var(--g);
+  box-shadow: var(--shadow-glow), var(--shadow-md);
+  transform: translateY(-1px);
 }
 
-.input-card:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  transform: translateY(-2px);
+.field-top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  background: #fbfdfb;
+  border-bottom: 1px solid #f0f5f0;
 }
-
-.input-card:focus-within {
-  border-color: var(--green);
-  box-shadow: 0 0 0 3px rgba(20,168,0,0.08), 0 4px 20px rgba(0,0,0,0.06);
-  transform: translateY(-2px);
+.field-left { display: flex; align-items: center; gap: 10px; }
+.field-ico {
+  width: 28px; height: 28px;
+  background: white; border: 1px solid var(--border);
+  border-radius: 7px; display: grid; place-items: center;
+  transition: var(--transition);
 }
-
-.card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 18px;
-  background: #fafcfa;
-  border-bottom: 1px solid #f0f4f0;
+.field-card:focus-within .field-ico {
+  background: var(--tag-bg); border-color: var(--tag-border);
 }
-
-.card-top-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.card-icon {
-  width: 30px; height: 30px;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-
-.input-card:focus-within .card-icon {
-  background: var(--green-light);
-  border-color: rgba(20,168,0,0.2);
-}
-
-.card-icon svg {
-  width: 14px; height: 14px;
-  stroke: var(--muted);
-  transition: stroke 0.2s ease;
-}
-
-.input-card:focus-within .card-icon svg { stroke: var(--green); }
-
-.card-label { font-size: 13px; font-weight: 700; color: var(--text); }
-.card-sublabel { font-size: 11px; color: #aab8aa; margin-top: 1px; }
-
-.char-badge {
-  font-size: 10px;
-  font-weight: 600;
-  color: #aab8aa;
-  background: white;
-  border: 1px solid var(--border);
-  padding: 3px 8px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+.field-ico svg { width:13px;height:13px;stroke:var(--muted);transition:var(--transition); }
+.field-card:focus-within .field-ico svg { stroke:var(--g); }
+.field-lbl { font-size: 12px; font-weight: 700; color: var(--text); }
+.field-sub { font-size: 10px; color: var(--light); margin-top: 1px; }
+.field-count {
+  font-size: 10px; font-weight: 600; color: var(--light);
+  background: white; border: 1px solid var(--border);
+  padding: 3px 8px; border-radius: 4px;
   font-variant-numeric: tabular-nums;
+  transition: var(--transition);
+}
+.field-card:focus-within .field-count {
+  color: var(--g); background: var(--tag-bg); border-color: var(--tag-border);
 }
 
-.input-card:focus-within .char-badge {
-  color: var(--green);
-  border-color: rgba(20,168,0,0.2);
-  background: var(--green-light);
-}
-
-textarea, input[type="text"] {
-  width: 100%;
-  background: white;
-  border: none;
-  color: var(--text);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 400;
-  padding: 18px;
-  resize: none;
-  outline: none;
-  line-height: 1.8;
+textarea {
+  width: 100%; background: white; border: none;
+  color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; line-height: 1.85; font-weight: 400;
+  padding: 16px; resize: none; outline: none;
   transition: background 0.2s ease;
 }
+textarea::placeholder { color: #c8d4c8; }
+#job_post { height: 190px; }
+#freelancer_skills { height: 120px; }
 
-textarea::placeholder, input::placeholder { color: #c8d4c8; }
-
-#job_post { height: 200px; }
-#freelancer_skills { height: 130px; }
-
-.two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+/* Two col inputs */
+.two-row {
+  display: grid; grid-template-columns: 1fr 1fr;
 }
-
-.half-input {
-  padding: 14px 18px;
-  border-right: 1px solid #f0f4f0;
+.mini-field {
+  padding: 13px 16px;
+  border-right: 1px solid #f0f5f0;
 }
-
-.half-input:last-child { border-right: none; }
-
-.half-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #aab8aa;
-  margin-bottom: 6px;
+.mini-field:last-child { border-right: none; }
+.mini-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--light); margin-bottom: 6px;
 }
-
 input[type="text"] {
-  padding: 0;
-  font-size: 14px;
-  font-weight: 600;
-  background: transparent;
+  width: 100%; border: none; outline: none;
+  background: transparent; color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500;
+}
+input[type="text"]::placeholder { color: #ccd8cc; }
+
+/* ─── RIGHT PANEL ─── */
+.right-panel {
+  display: flex; flex-direction: column; gap: 14px;
+  position: sticky; top: 76px;
 }
 
-/* SIDEBAR */
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  position: sticky;
-  top: 80px;
-}
-
+/* ─── GEN CARD ─── */
 .gen-card {
-  background: white;
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  border-radius: var(--r);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
 }
-
-.gen-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-.gen-sub { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+.gen-head { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+.gen-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; }
 
 .gen-btn {
-  width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, var(--green), #0d9200);
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  position: relative;
-  overflow: hidden;
+  width: 100%; padding: 15px;
+  background: linear-gradient(135deg, var(--g) 0%, #0d9200 100%);
+  color: white; border: none; border-radius: var(--r-sm);
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: var(--transition);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  position: relative; overflow: hidden;
 }
-
-.gen-btn::after {
+.gen-btn::before {
   content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
-  transform: translateX(-100%);
-  transition: transform 0.5s ease;
-}
-
-.gen-btn:hover::after { transform: translateX(100%); }
-
-.gen-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(20,168,0,0.3);
-}
-
-.gen-btn:active { transform: translateY(0); }
-
-.gen-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.gen-btn svg { width: 16px; height: 16px; }
-
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 16px 0;
-}
-
-.divider-line { flex: 1; height: 1px; background: var(--border); }
-
-.divider-text {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #aab8aa;
-}
-
-.tone-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.tone-btn {
-  padding: 10px;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: white;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  text-align: center;
-}
-
-.tone-btn:hover {
-  border-color: var(--green);
-  color: var(--green);
-  background: var(--green-light);
-  transform: scale(1.02);
-}
-
-.tone-btn.active {
-  border-color: var(--green);
-  color: var(--green);
-  background: var(--green-light);
-}
-
-/* TIPS */
-.tips-card {
-  background: var(--navy);
-  border-radius: 16px;
-  padding: 24px;
-  position: relative;
-  overflow: hidden;
-}
-
-.tips-card::before {
-  content: '';
-  position: absolute;
-  top: -40px; right: -40px;
-  width: 150px; height: 150px;
-  background: radial-gradient(circle, rgba(20,168,0,0.15) 0%, transparent 70%);
+  position: absolute; top:-1px; left:-1px; right:-1px; bottom:-1px;
+  border-radius: var(--r-sm);
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
   pointer-events: none;
 }
-
-.tips-title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--green);
-  margin-bottom: 18px;
+.gen-btn::after {
+  content: '';
+  position: absolute; inset:0;
+  background: linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
+  transform: translateX(-100%); transition: transform 0.4s ease;
 }
+.gen-btn:hover::after { transform: translateX(100%); }
+.gen-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--glow); }
+.gen-btn:active { transform: translateY(0); box-shadow: none; }
+.gen-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+.gen-btn svg { width:15px;height:15px; }
 
+.sep { display:flex;align-items:center;gap:10px;margin:16px 0; }
+.sep-line { flex:1;height:1px;background:var(--border); }
+.sep-text { font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--light); }
+
+/* Tone picker */
+.tone-grid { display:grid;grid-template-columns:1fr 1fr;gap:7px; }
+.tone-pill {
+  padding: 9px 10px; text-align: center;
+  border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  cursor: pointer; transition: var(--transition);
+  background: white; font-family: 'DM Sans', sans-serif;
+}
+.tone-pill:hover { border-color:var(--g);color:var(--g);background:var(--tag-bg); transform:scale(1.02); }
+.tone-pill.on { border-color:var(--g);color:var(--g);background:var(--tag-bg); }
+
+/* ─── TIPS CARD ─── */
+.tips-card {
+  background: var(--navy);
+  border-radius: var(--r);
+  padding: 22px;
+  position: relative; overflow: hidden;
+}
+.tips-card::before {
+  content: '';
+  position: absolute; top:-50px;right:-50px;
+  width:180px;height:180px;
+  background: radial-gradient(circle, rgba(20,168,0,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.tips-card::after {
+  content: '';
+  position: absolute; bottom:-30px;left:-30px;
+  width:120px;height:120px;
+  background: radial-gradient(circle, rgba(127,255,0,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.tips-head {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--g); margin-bottom: 16px;
+}
 .tip {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 14px;
-  align-items: flex-start;
-  opacity: 0;
-  transform: translateX(-10px);
-  transition: all 0.3s ease;
+  display: flex; gap: 10px; margin-bottom: 13px; align-items: flex-start;
+  opacity: 0; transform: translateX(-8px);
+  transition: all 0.35s ease;
 }
-
-.tip.show { opacity: 1; transform: translateX(0); }
+.tip.visible { opacity: 1; transform: translateX(0); }
 .tip:last-child { margin-bottom: 0; }
+.tip-bar { width:2px;flex-shrink:0;background:var(--g);border-radius:2px;opacity:0.3;margin-top:3px;align-self:stretch; }
+.tip-text { font-size: 11px; color: rgba(255,255,255,0.38); line-height: 1.75; }
+.tip-text strong { color: rgba(255,255,255,0.6); font-weight: 600; }
 
-.tip-line {
-  width: 2px;
-  flex-shrink: 0;
-  background: var(--green);
-  border-radius: 2px;
-  margin-top: 4px;
-  align-self: stretch;
-  opacity: 0.4;
+/* ─── LOADING ─── */
+.load-area { display:none;margin-top:20px; }
+.load-area.on { display:block; }
+
+.load-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--r); padding: 56px 40px;
+  text-align: center; box-shadow: var(--shadow-md);
 }
 
-.tip-text {
-  font-size: 12px;
-  color: rgba(255,255,255,0.45);
-  line-height: 1.7;
-}
-
-/* LOADING */
-.loading-area {
-  display: none;
-  margin-top: 24px;
-}
-
-.loading-area.show { display: block; }
-
-.loading-card {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 64px 40px;
-  text-align: center;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-}
-
-.loader-ring {
-  width: 64px; height: 64px;
-  margin: 0 auto 28px;
+.load-ring {
+  width: 58px; height: 58px;
+  margin: 0 auto 24px;
   position: relative;
 }
-
-.loader-ring::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 3px solid var(--border);
+.load-ring::before {
+  content:''; position:absolute; inset:0; border-radius:50%;
+  border: 2px solid var(--border);
 }
-
-.loader-ring::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 3px solid transparent;
-  border-top-color: var(--green);
-  animation: spin 0.8s linear infinite;
+.load-ring::after {
+  content:''; position:absolute; inset:0; border-radius:50%;
+  border: 2px solid transparent; border-top-color: var(--g);
+  animation: spin 0.75s linear infinite;
 }
+@keyframes spin { to { transform:rotate(360deg); } }
 
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.loader-icon {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.load-ico { position:absolute;inset:0;display:grid;place-items:center; }
+.load-ico svg { width:20px;height:20px;stroke:var(--g); }
+.load-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px; font-weight: 700; color: var(--text);
+  margin-bottom: 7px; letter-spacing: -0.02em;
 }
-
-.loader-icon svg {
-  width: 22px; height: 22px;
-  stroke: var(--green);
-}
-
-.loading-title {
-  font-family: 'Lora', serif;
-  font-size: 22px;
-  font-weight: 600;
-  font-style: italic;
-  color: var(--text);
-  margin-bottom: 8px;
-}
-
-.loading-sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
-
-.loading-progress-bar {
-  width: 240px;
-  height: 3px;
-  background: var(--border);
-  border-radius: 2px;
-  margin: 0 auto;
-  overflow: hidden;
-}
-
-.loading-progress-fill {
+.load-sub { font-size: 12px; color: var(--muted); margin-bottom: 28px; }
+.load-bar { width:220px;height:2px;background:var(--border);border-radius:2px;margin:0 auto;overflow:hidden; }
+.load-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--green), #7fff00);
+  background: linear-gradient(90deg, var(--g), #7fff00);
   border-radius: 2px;
-  animation: loadProgress 3s ease-in-out forwards;
+  animation: fillUp 3.5s ease-in-out forwards;
+}
+@keyframes fillUp {
+  0%{width:0%} 25%{width:35%} 55%{width:62%} 80%{width:82%} 100%{width:92%}
+}
+.load-steps {
+  display: flex; justify-content: center; gap: 20px; margin-top: 22px;
+}
+.load-step {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 600; color: var(--light);
+  letter-spacing: 0.06em;
+  transition: color 0.4s ease;
+}
+.load-step.active { color: var(--g); }
+.load-step-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--border); transition: background 0.4s ease;
+}
+.load-step.active .load-step-dot { background: var(--g); }
+
+/* ─── OUTPUT ─── */
+.out-area { display:none;margin-top:20px;animation:slideIn 0.45s cubic-bezier(0.16,1,0.3,1); }
+.out-area.on { display:block; }
+@keyframes slideIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+.out-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--r); overflow: hidden;
+  box-shadow: var(--shadow-lg);
 }
 
-@keyframes loadProgress {
-  0% { width: 0%; }
-  30% { width: 40%; }
-  60% { width: 70%; }
-  90% { width: 88%; }
-  100% { width: 95%; }
+.out-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px;
+  background: #fbfdfb; border-bottom: 1px solid var(--border);
 }
-
-/* OUTPUT */
-.output-area {
-  display: none;
-  margin-top: 24px;
-  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+.out-left { display:flex;align-items:center;gap:10px; }
+.out-live {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--g);
 }
-
-.output-area.show { display: block; }
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+.live-dot {
+  width:6px;height:6px;background:var(--g);border-radius:50%;
+  box-shadow:0 0 0 3px rgba(20,168,0,0.15);
+  animation: pulseLive 2s infinite;
 }
-
-.output-card {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+@keyframes pulseLive {
+  0%,100%{box-shadow:0 0 0 3px rgba(20,168,0,0.15)}
+  50%{box-shadow:0 0 0 6px rgba(20,168,0,0)}
 }
-
-.output-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 24px;
-  background: #fafcfa;
-  border-bottom: 1px solid var(--border);
+.out-score {
+  display: flex; align-items: center; gap: 7px;
+  background: white; border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 12px;
+  font-size: 11px; font-weight: 700; color: var(--text);
 }
+.score-bars { display:flex;gap:2px;align-items:flex-end; }
+.score-bar { width:4px;border-radius:2px;background:var(--g); }
+.score-bar:nth-child(1){height:8px}
+.score-bar:nth-child(2){height:12px}
+.score-bar:nth-child(3){height:16px}
+.score-bar:nth-child(4){height:10px;background:var(--border)}
 
-.output-bar-left { display: flex; align-items: center; gap: 12px; }
-
-.output-live {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--green);
+.out-btns { display:flex;gap:8px; }
+.obtn {
+  display:flex;align-items:center;gap:5px;
+  padding: 7px 14px; border-radius:7px;
+  font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600;
+  cursor:pointer; transition:var(--transition); border:none;
 }
-
-.output-live::before {
-  content: '';
-  width: 6px; height: 6px;
-  background: var(--green);
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(20,168,0,0.15);
-  animation: livePulse2 2s infinite;
+.obtn svg { width:12px;height:12px; }
+.obtn-ghost {
+  background:white;color:var(--muted);
+  border:1px solid var(--border) !important;
 }
+.obtn-ghost:hover { border-color:var(--g)!important;color:var(--g);transform:translateY(-1px); }
+.obtn-green { background:var(--g);color:white; }
+.obtn-green:hover { background:var(--g2);transform:translateY(-1px);box-shadow:0 4px 12px var(--glow); }
+.obtn-green.copied { background:#059669; }
 
-@keyframes livePulse2 {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(20,168,0,0.15); }
-  50% { box-shadow: 0 0 0 6px rgba(20,168,0,0); }
-}
-
-.output-score {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 4px 12px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.score-dots { display: flex; gap: 3px; }
-.score-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
-.score-dot.off { background: var(--border); }
-
-.output-btns { display: flex; gap: 8px; }
-
-.out-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
-}
-
-.out-btn svg { width: 13px; height: 13px; }
-
-.out-btn-ghost {
-  background: white;
-  color: var(--muted);
-  border: 1px solid var(--border) !important;
-}
-
-.out-btn-ghost:hover {
-  border-color: var(--green) !important;
-  color: var(--green);
-  transform: translateY(-1px);
-}
-
-.out-btn-solid {
-  background: var(--green);
-  color: white;
-}
-
-.out-btn-solid:hover {
-  background: var(--green-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(20,168,0,0.25);
-}
-
-.out-btn-solid.copied { background: #059669; }
-
-.proposal-output {
-  padding: 40px 48px;
-  font-size: 14px;
-  line-height: 2;
-  color: #374151;
-  white-space: pre-wrap;
+.out-body { padding: 36px 44px; }
+#proposal-text {
+  font-size: 14px; line-height: 2.05;
+  color: var(--text2); white-space: pre-wrap;
   font-weight: 400;
 }
 
-.output-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 24px;
+.out-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px;
   border-top: 1px solid var(--border);
-  background: #fafcfa;
+  background: #fbfdfb;
+}
+.out-note { font-size: 10px; color: var(--light); font-weight: 500; }
+.out-wc {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  background: white; border: 1px solid var(--border);
+  padding: 3px 10px; border-radius: 4px;
 }
 
-.footer-note { font-size: 11px; color: #aab8aa; font-weight: 500; }
-
-.word-pill {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted);
-  background: white;
-  border: 1px solid var(--border);
-  padding: 3px 10px;
-  border-radius: 4px;
+/* Upwork char limit bar */
+.char-limit-bar {
+  margin: 0 44px;
+  padding: 10px 0;
+  border-top: 1px dashed var(--border);
+  display: flex; align-items: center; gap: 10px;
 }
+.cl-label { font-size: 10px; color: var(--light); font-weight: 600; white-space: nowrap; }
+.cl-track { flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden; }
+.cl-fill { height:100%;background:var(--g);border-radius:2px;transition:width 0.3s ease; }
+.cl-fill.warn { background:#f59e0b; }
+.cl-fill.over { background:#ef4444; }
+.cl-num { font-size:10px;font-weight:700;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums; }
 
-/* WHY SECTION */
+/* ─── WHY SECTION ─── */
 .why {
-  background: white;
-  border-top: 1px solid var(--border);
-  padding: 80px 60px;
+  background: white; border-top: 1px solid var(--border);
+  padding: 72px 48px;
 }
-
 .why-inner { max-width: 1100px; margin: 0 auto; }
-
 .why-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-  margin-top: 48px;
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 2px; background: var(--border);
+  border: 1px solid var(--border); border-radius: var(--r-lg);
+  overflow: hidden; margin-top: 44px;
 }
-
 .why-cell {
-  background: white;
-  padding: 36px 28px;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  background: white; padding: 32px 26px;
+  transition: var(--transition); position: relative; overflow: hidden;
 }
-
-.why-cell::before {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--green);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
+.why-cell::after {
+  content:''; position:absolute; bottom:0;left:0;right:0;
+  height:2px;background:var(--g);transform:scaleX(0);
+  transition:transform 0.3s ease; transform-origin:left;
 }
-
-.why-cell:hover::before { transform: scaleX(1); }
-.why-cell:hover { background: var(--off); transform: translateY(-2px); }
-
-.why-icon {
-  width: 44px; height: 44px;
-  background: var(--green-light);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 18px;
-  transition: all 0.3s ease;
+.why-cell:hover::after { transform:scaleX(1); }
+.why-cell:hover { background:var(--off); transform:translateY(-2px); }
+.why-ico {
+  width:40px;height:40px;background:var(--tag-bg);border-radius:10px;
+  display:grid;place-items:center;margin-bottom:16px;
+  transition:var(--transition);
 }
+.why-cell:hover .why-ico { background:var(--g);transform:scale(1.08) rotate(-5deg); }
+.why-ico svg { width:16px;height:16px;stroke:var(--g);transition:stroke 0.2s ease; }
+.why-cell:hover .why-ico svg { stroke:white; }
+.why-ttl { font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px; }
+.why-desc { font-size:12px;color:var(--muted);line-height:1.75; }
 
-.why-cell:hover .why-icon {
-  background: var(--green);
-  transform: scale(1.1) rotate(-5deg);
-}
-
-.why-icon svg {
-  width: 18px; height: 18px;
-  stroke: var(--green);
-  transition: stroke 0.3s ease;
-}
-
-.why-cell:hover .why-icon svg { stroke: white; }
-
-.why-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
-.why-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
-
-/* FOOTER */
+/* ─── FOOTER ─── */
 footer {
   background: var(--navy);
-  padding: 40px 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  padding: 36px 48px;
+  display: flex; align-items: center; justify-content: space-between;
   position: relative;
-  overflow: hidden;
 }
-
 footer::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(20,168,0,0.5), transparent);
+  content:''; position:absolute; top:0;left:0;right:0;height:1px;
+  background: linear-gradient(90deg,transparent,rgba(20,168,0,0.4),transparent);
 }
+.foot-brand { font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:white;letter-spacing:-0.02em; }
+.foot-brand span { color:var(--g); }
+.foot-note { font-size:10px;color:rgba(255,255,255,0.2);font-weight:500; }
 
-.footer-logo { font-size: 17px; font-weight: 800; color: white; letter-spacing: -0.02em; }
-.footer-logo span { color: var(--green); }
-.footer-note { font-size: 11px; color: rgba(255,255,255,0.25); font-weight: 500; }
+/* ─── REVEAL ─── */
+.rv { opacity:0;transform:translateY(16px);transition:all 0.55s cubic-bezier(0.16,1,0.3,1); }
+.rv.in { opacity:1;transform:translateY(0); }
 
-/* ANIMATIONS */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+/* ─── RESPONSIVE ─── */
+@media(max-width:1024px){
+  .split { grid-template-columns:1fr; }
+  .right-panel { position:static; }
 }
-
-.reveal {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+@media(max-width:768px){
+  .nav { padding:0 20px; }
+  .nav-badge { display:none; }
+  .hero { padding:88px 20px 52px; }
+  .hero-nums { gap:0;flex-wrap:wrap; }
+  .hero-num { padding:0 20px; }
+  .main { padding:40px 20px 60px; }
+  .strip { padding:16px 20px;gap:24px;flex-wrap:wrap;justify-content:flex-start; }
+  .why { padding:48px 20px; }
+  .why-grid { grid-template-columns:1fr; }
+  footer { flex-direction:column;gap:10px;text-align:center;padding:28px 20px; }
+  .two-row { grid-template-columns:1fr; }
+  .mini-field { border-right:none;border-bottom:1px solid #f0f5f0; }
+  .mini-field:last-child { border-bottom:none; }
+  .out-body { padding:24px 20px; }
+  .char-limit-bar { margin:0 20px; }
+  .hero-ctas { flex-direction:column;align-items:stretch; }
+  .cta-main,.cta-sec { justify-content:center; }
+  .main-header { flex-direction:column;align-items:flex-start;gap:10px; }
+  .out-topbar { flex-direction:column;gap:10px;align-items:flex-start; }
+  .out-btns { width:100%; }
+  .obtn { flex:1;justify-content:center; }
 }
-
-.reveal.revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* RESPONSIVE */
-@media (max-width: 960px) {
-  .nav { padding: 0 24px; }
-  .hero { padding: 100px 24px 60px; }
-  .hero-inner { grid-template-columns: 1fr; gap: 40px; }
-  .floating-card { display: none; }
-  .app-section { padding: 60px 24px 80px; }
-  .form-grid { grid-template-columns: 1fr; }
-  .sidebar { position: static; }
-  .why { padding: 60px 24px; }
-  .why-grid { grid-template-columns: 1fr; }
-  footer { flex-direction: column; gap: 12px; text-align: center; padding: 32px 24px; }
-  .trust-bar { padding: 20px 24px; gap: 24px; flex-wrap: wrap; }
-  .two-col { grid-template-columns: 1fr; }
-  .half-input { border-right: none; border-bottom: 1px solid #f0f4f0; }
-  .proposal-output { padding: 28px 24px; }
+@media(max-width:480px){
+  .hero h1 { font-size:34px; }
+  .hero-nums { justify-content:flex-start; }
+  .hero-num:nth-child(3) { border-right:none; }
 }
 </style>
 </head>
 <body>
 
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="ring"></div>
-<div class="progress" id="progress"></div>
+<div id="topbar" style="width:0"></div>
+<div class="cursor-dot" id="cd"></div>
+<div class="cursor-ring" id="cr"></div>
 
 <!-- NAV -->
 <nav class="nav" id="nav">
-  <a class="nav-logo" href="#">
-    <div class="logo-mark">
+  <a class="nav-brand" href="#">
+    <div class="nav-mark">
       <svg viewBox="0 0 24 24"><path d="M18.561 13.158c-1.102 0-2.135-.467-3.074-1.227l.228-1.076.008-.042c.207-1.143.849-3.06 2.839-3.06 1.492 0 2.703 1.212 2.703 2.703-.001 1.489-1.212 2.702-2.704 2.702zm0-8.14c-2.539 0-4.51 1.649-5.31 4.366-1.22-1.834-2.148-4.036-2.687-5.892H7.828v7.112c-.002 1.406-1.141 2.546-2.547 2.546-1.405 0-2.543-1.14-2.543-2.546V3.492H0v7.112c0 2.914 2.37 5.303 5.281 5.303 2.913 0 5.283-2.389 5.283-5.303v-1.19c.529 1.107 1.182 2.229 1.974 3.221l-1.673 7.873h2.797l1.213-5.71c1.063.679 2.285 1.109 3.686 1.109 3 0 5.439-2.452 5.439-5.45 0-3-2.439-5.439-5.439-5.439z"/></svg>
     </div>
-    <div class="logo-text">Proposal<span>Craft</span></div>
+    <div class="nav-name">Proposal<span>Craft</span></div>
   </a>
   <div class="nav-right">
-    <div class="nav-pill">Free to Use</div>
-    <button class="nav-cta" onclick="document.querySelector('.app-section').scrollIntoView({behavior:'smooth'})">Try it Free</button>
+    <div class="nav-badge"><span></span>Free to Use</div>
+    <button class="nav-btn" onclick="document.getElementById('appSection').scrollIntoView({behavior:'smooth'})">Try it Free →</button>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-grid"></div>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="orb o3"></div>
   <div class="hero-inner">
-    <div class="hero-left">
-      <div class="hero-eyebrow">
-        <div class="eyebrow-dot"></div>
-        Built for Upwork Freelancers
-      </div>
-      <h1>Write proposals that<br><em>win clients</em><br>on Upwork</h1>
-      <p class="hero-sub">Stop losing jobs to weaker freelancers with better proposals. AI writes Upwork-optimized proposals that speak directly to what clients want to hear.</p>
-      <div class="hero-buttons">
-        <button class="btn-primary" onclick="document.querySelector('.app-section').scrollIntoView({behavior:'smooth'})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Generate Free Proposal
-        </button>
-        <button class="btn-ghost">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-          See Example
-        </button>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <span class="stat-num">10s</span>
-          <span class="stat-label">Generate</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="hero-stat">
-          <span class="stat-num">100%</span>
-          <span class="stat-label">Free</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="hero-stat">
-          <span class="stat-num">AI</span>
-          <span class="stat-label">Powered</span>
-        </div>
-      </div>
+    <div class="hero-chip">
+      <div class="chip-dot"></div>
+      Built for Upwork Freelancers
     </div>
-
-    <div class="hero-right">
-      <div class="floating-card">
-        <div class="card-header">
-          <div class="card-badge">Live Preview</div>
-          <div class="card-dots">
-            <div class="card-dot"></div>
-            <div class="card-dot"></div>
-            <div class="card-dot"></div>
-          </div>
-        </div>
-        <div class="proposal-text" id="typingText"></div>
-        <div class="card-metrics">
-          <div class="card-metric">
-            <span class="card-metric-num">98%</span>
-            <span class="card-metric-label">Match Score</span>
-          </div>
-          <div class="card-metric">
-            <span class="card-metric-num">147</span>
-            <span class="card-metric-label">Words</span>
-          </div>
-          <div class="card-metric">
-            <span class="card-metric-num">A+</span>
-            <span class="card-metric-label">Tone</span>
-          </div>
-        </div>
+    <h1>Write proposals that<br><em>win clients</em> instantly</h1>
+    <p class="hero-sub">Stop losing jobs to weaker freelancers with better proposals. ProposalCraft reads the client's job post and writes a tailored, human-sounding proposal in seconds.</p>
+    <div class="hero-ctas">
+      <button class="cta-main" onclick="document.getElementById('appSection').scrollIntoView({behavior:'smooth'})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Generate Free Proposal
+      </button>
+      <button class="cta-sec">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        See Example
+      </button>
+    </div>
+    <div class="hero-nums">
+      <div class="hero-num">
+        <div class="num-val">10s</div>
+        <div class="num-label">Generate</div>
+      </div>
+      <div class="hero-num">
+        <div class="num-val">100%</div>
+        <div class="num-label">Free</div>
+      </div>
+      <div class="hero-num">
+        <div class="num-val">AI</div>
+        <div class="num-label">Powered</div>
+      </div>
+      <div class="hero-num">
+        <div class="num-val">Top 1%</div>
+        <div class="num-label">Quality</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- TRUST BAR -->
-<div class="trust-bar">
-  <div class="trust-item">
-    <div class="trust-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    </div>
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
     Instant Generation
   </div>
-  <div class="trust-item">
-    <div class="trust-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-    </div>
-    Upwork Optimized
+  <div class="strip-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    Upwork Policy Compliant
   </div>
-  <div class="trust-item">
-    <div class="trust-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-    </div>
-    Sounds Human
+  <div class="strip-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Sounds 100% Human
   </div>
-  <div class="trust-item">
-    <div class="trust-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-    </div>
+  <div class="strip-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
     Free Forever
+  </div>
+  <div class="strip-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Client Psychology Built-in
   </div>
 </div>
 
-<!-- APP SECTION -->
-<section class="app-section reveal" id="appSection">
-  <div class="section-tag">Generate Proposal</div>
-  <div class="section-title">Fill in your details below</div>
+<!-- MAIN APP -->
+<section class="main rv" id="appSection">
+  <div class="main-header">
+    <div class="main-title-group">
+      <div class="main-tag">Generate Proposal</div>
+      <div class="main-title">Fill in your details below</div>
+    </div>
+    <div class="main-hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      More detail = better proposal
+    </div>
+  </div>
 
-  <div class="form-grid">
-    <div class="input-stack">
+  <div class="split">
+    <!-- LEFT -->
+    <div class="left-panel">
 
-      <div class="input-card reveal">
-        <div class="card-top">
-          <div class="card-top-left">
-            <div class="card-icon">
+      <div class="field-card rv">
+        <div class="field-top">
+          <div class="field-left">
+            <div class="field-ico">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
             </div>
             <div>
-              <div class="card-label">Upwork Job Post</div>
-              <div class="card-sublabel">Paste the full client description</div>
+              <div class="field-lbl">Upwork Job Post</div>
+              <div class="field-sub">Paste the full client description</div>
             </div>
           </div>
-          <div class="char-badge" id="jc">0 chars</div>
+          <div class="field-count" id="jc">0 chars</div>
         </div>
-        <textarea id="job_post" placeholder="Paste the Upwork job description here. The more detail you include, the better your proposal will be.
+        <textarea id="job_post" placeholder="Paste the Upwork job description here. The more details you include — budget, requirements, specific needs — the more tailored and powerful your proposal will be.
 
-Example: Looking for an experienced Python developer to build a REST API for our mobile app. Must have experience with Flask, PostgreSQL, and AWS..." oninput="document.getElementById('jc').textContent=this.value.length+' chars'"></textarea>
+Example: Looking for an experienced Python developer to build a REST API for our mobile app. We need Flask, PostgreSQL, JWT auth, and AWS deployment. Budget $1500, timeline 2 weeks..." oninput="document.getElementById('jc').textContent=this.value.length+' chars'"></textarea>
       </div>
 
-      <div class="input-card reveal">
-        <div class="card-top">
-          <div class="card-top-left">
-            <div class="card-icon">
+      <div class="field-card rv">
+        <div class="field-top">
+          <div class="field-left">
+            <div class="field-ico">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </div>
             <div>
-              <div class="card-label">Your Skills & Experience</div>
-              <div class="card-sublabel">What makes you the right person</div>
+              <div class="field-lbl">Your Skills & Experience</div>
+              <div class="field-sub">What makes you the right person</div>
             </div>
           </div>
-          <div class="char-badge" id="sc">0 chars</div>
+          <div class="field-count" id="sc">0 chars</div>
         </div>
-        <textarea id="freelancer_skills" placeholder="Describe your relevant skills and experience...
+        <textarea id="freelancer_skills" placeholder="Describe your relevant skills, experience, and past wins...
 
-Example: 3 years Python, built 5 REST APIs for SaaS companies, expert in Flask and FastAPI, AWS certified, strong with PostgreSQL..." oninput="document.getElementById('sc').textContent=this.value.length+' chars'"></textarea>
+Example: 4 years Python, built 8 REST APIs for SaaS startups, expert in Flask and FastAPI, AWS certified. Delivered a similar project for a fintech client — 120K daily requests, 99.97% uptime, delivered 4 days early." oninput="document.getElementById('sc').textContent=this.value.length+' chars'"></textarea>
       </div>
 
-      <div class="input-card reveal">
-        <div class="card-top">
-          <div class="card-top-left">
-            <div class="card-icon">
+      <div class="field-card rv">
+        <div class="field-top">
+          <div class="field-left">
+            <div class="field-ico">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             </div>
             <div>
-              <div class="card-label">Rate & Experience</div>
-              <div class="card-sublabel">Optional — improves results</div>
+              <div class="field-lbl">Rate & Experience</div>
+              <div class="field-sub">Optional — makes proposal sharper</div>
             </div>
           </div>
         </div>
-        <div class="two-col">
-          <div class="half-input">
-            <div class="half-label">Your Rate</div>
-            <input type="text" id="hourly_rate" placeholder="e.g. $30/hr or Fixed $800">
+        <div class="two-row">
+          <div class="mini-field">
+            <div class="mini-label">Your Rate</div>
+            <input type="text" id="hourly_rate" placeholder="e.g. $35/hr or Fixed $800">
           </div>
-          <div class="half-input">
-            <div class="half-label">Years of Experience</div>
-            <input type="text" id="experience" placeholder="e.g. 3 years">
+          <div class="mini-field">
+            <div class="mini-label">Years of Experience</div>
+            <input type="text" id="experience" placeholder="e.g. 4 years">
           </div>
         </div>
       </div>
 
     </div>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <div class="gen-card reveal">
-        <div class="gen-title">Ready to generate?</div>
-        <div class="gen-sub">Fill in the job post and your skills for the best result.</div>
-        <button class="gen-btn" onclick="generate()" id="genBtn">
+    <!-- RIGHT SIDEBAR -->
+    <div class="right-panel">
+
+      <div class="gen-card rv">
+        <div class="gen-head">Ready to generate?</div>
+        <div class="gen-desc">Fill in the job post and your skills, then hit generate. The AI reads the client's writing style and crafts a tailored proposal.</div>
+        <button class="gen-btn" id="genBtn" onclick="generate()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <span id="btnText">Generate Proposal</span>
+          <span id="btnTxt">Generate Proposal</span>
         </button>
-        <div class="divider">
-          <div class="divider-line"></div>
-          <div class="divider-text">Tone</div>
-          <div class="divider-line"></div>
-        </div>
+        <div class="sep"><div class="sep-line"></div><div class="sep-text">Tone</div><div class="sep-line"></div></div>
         <div class="tone-grid">
-          <div class="tone-btn active" onclick="setTone(this,'professional')">Professional</div>
-          <div class="tone-btn" onclick="setTone(this,'confident')">Confident</div>
-          <div class="tone-btn" onclick="setTone(this,'friendly')">Friendly</div>
-          <div class="tone-btn" onclick="setTone(this,'concise')">Concise</div>
+          <div class="tone-pill on" onclick="setTone(this,'professional')">Professional</div>
+          <div class="tone-pill" onclick="setTone(this,'confident')">Confident</div>
+          <div class="tone-pill" onclick="setTone(this,'friendly')">Friendly</div>
+          <div class="tone-pill" onclick="setTone(this,'concise')">Concise</div>
         </div>
       </div>
 
       <div class="tips-card">
-        <div class="tips-title">Winning Proposal Tips</div>
+        <div class="tips-head">Winning Proposal Tips</div>
         <div class="tip">
-          <div class="tip-line"></div>
-          <div class="tip-text">Start with the client's problem — not your skills. Show you understand their need first.</div>
+          <div class="tip-bar"></div>
+          <div class="tip-text"><strong>Start with their problem</strong> — not your skills. Show you understand their need in the first sentence.</div>
         </div>
         <div class="tip">
-          <div class="tip-line"></div>
-          <div class="tip-text">Keep it under 200 words. Clients skim fast — make every sentence count.</div>
+          <div class="tip-bar"></div>
+          <div class="tip-text"><strong>Use real numbers.</strong> "Reduced load time by 60%" beats "improved performance" every time.</div>
         </div>
         <div class="tip">
-          <div class="tip-line"></div>
-          <div class="tip-text">Reference one specific detail from their post. It proves you actually read it.</div>
+          <div class="tip-bar"></div>
+          <div class="tip-text"><strong>Reference their post.</strong> One specific detail proves you actually read it — most freelancers don't.</div>
         </div>
         <div class="tip">
-          <div class="tip-line"></div>
-          <div class="tip-text">End with a clear question that invites a reply. Always close with action.</div>
+          <div class="tip-bar"></div>
+          <div class="tip-text"><strong>End with a question.</strong> A smart question forces a reply and shows deeper expertise than any credential.</div>
+        </div>
+        <div class="tip">
+          <div class="tip-bar"></div>
+          <div class="tip-text"><strong>Address their fear.</strong> Clients fear wasted money and bad hires — tackle it directly in your proposal.</div>
         </div>
       </div>
+
     </div>
   </div>
 
   <!-- LOADING -->
-  <div class="loading-area" id="loading">
-    <div class="loading-card">
-      <div class="loader-ring">
-        <div class="loader-icon">
+  <div class="load-area" id="loadArea">
+    <div class="load-card">
+      <div class="load-ring">
+        <div class="load-ico">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         </div>
       </div>
-      <div class="loading-title">Writing your winning proposal...</div>
-      <div class="loading-sub">Analysing the job, matching your profile, crafting something great</div>
-      <div class="loading-progress-bar">
-        <div class="loading-progress-fill" id="progressFill"></div>
+      <div class="load-title">Crafting your proposal...</div>
+      <div class="load-sub">Analysing the job post, matching your profile, writing something great</div>
+      <div class="load-bar"><div class="load-fill" id="loadFill"></div></div>
+      <div class="load-steps">
+        <div class="load-step active" id="s1"><div class="load-step-dot"></div>Reading job</div>
+        <div class="load-step" id="s2"><div class="load-step-dot"></div>Matching profile</div>
+        <div class="load-step" id="s3"><div class="load-step-dot"></div>Writing proposal</div>
       </div>
     </div>
   </div>
 
   <!-- OUTPUT -->
-  <div class="output-area" id="output">
-    <div class="output-card">
-      <div class="output-bar">
-        <div class="output-bar-left">
-          <div class="output-live">Proposal Ready</div>
-          <div class="output-score">
-            <div class="score-dots">
-              <div class="score-dot"></div>
-              <div class="score-dot"></div>
-              <div class="score-dot"></div>
-              <div class="score-dot"></div>
-              <div class="score-dot off"></div>
+  <div class="out-area" id="outArea">
+    <div class="out-card">
+      <div class="out-topbar">
+        <div class="out-left">
+          <div class="out-live"><div class="live-dot"></div>Proposal Ready</div>
+          <div class="out-score">
+            <div class="score-bars">
+              <div class="score-bar"></div>
+              <div class="score-bar"></div>
+              <div class="score-bar"></div>
+              <div class="score-bar"></div>
             </div>
             Strong Match
           </div>
         </div>
-        <div class="output-btns">
-          <button class="out-btn out-btn-ghost" onclick="generate()">
+        <div class="out-btns">
+          <button class="obtn obtn-ghost" onclick="generate()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
             Regenerate
           </button>
-          <button class="out-btn out-btn-solid" onclick="copyProposal()" id="copyBtn">
+          <button class="obtn obtn-green" id="copyBtn" onclick="copyIt()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             Copy Proposal
           </button>
         </div>
       </div>
-      <div class="proposal-output" id="proposalText"></div>
-      <div class="output-footer">
-        <div class="footer-note">Ready to paste directly into Upwork</div>
-        <div class="word-pill" id="wordCount">0 words</div>
+      <div class="out-body">
+        <div id="proposal-text"></div>
+      </div>
+      <div class="char-limit-bar">
+        <div class="cl-label">Upwork Limit</div>
+        <div class="cl-track"><div class="cl-fill" id="clFill" style="width:0%"></div></div>
+        <div class="cl-num" id="clNum">0 / 5000</div>
+      </div>
+      <div class="out-footer">
+        <div class="out-note">Ready to paste directly into Upwork</div>
+        <div class="out-wc" id="wc">0 words</div>
       </div>
     </div>
   </div>
@@ -1570,29 +1054,29 @@ Example: 3 years Python, built 5 REST APIs for SaaS companies, expert in Flask a
 <!-- WHY -->
 <section class="why">
   <div class="why-inner">
-    <div class="section-tag">Why ProposalCraft</div>
-    <div class="section-title">Built specifically for Upwork success</div>
+    <div class="main-tag rv">Why ProposalCraft</div>
+    <div class="main-title rv" style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-0.03em;color:var(--text);">Built specifically for Upwork success</div>
     <div class="why-grid">
-      <div class="why-cell reveal">
-        <div class="why-icon">
+      <div class="why-cell rv">
+        <div class="why-ico">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         </div>
-        <div class="why-title">Upwork Optimized</div>
-        <div class="why-desc">Every proposal follows Upwork's proven best practices — addressing client pain points, showing relevant experience, and ending with a clear call to action.</div>
+        <div class="why-ttl">Upwork Policy Compliant</div>
+        <div class="why-desc">Every proposal follows Upwork's guidelines — no contact details, no off-platform requests, no spam. Just professional, client-winning content that passes Upwork's screening.</div>
       </div>
-      <div class="why-cell reveal">
-        <div class="why-icon">
+      <div class="why-cell rv">
+        <div class="why-ico">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         </div>
-        <div class="why-title">Instant Generation</div>
-        <div class="why-desc">Stop spending 30 minutes per proposal. Get a tailored, professional proposal in under 10 seconds and apply to more jobs faster than your competition.</div>
+        <div class="why-ttl">Client Psychology Built-in</div>
+        <div class="why-desc">Our AI reads how the client writes and matches their tone, length, and energy. A stressed client gets a decisive proposal. An excited client gets matched energy. Every time.</div>
       </div>
-      <div class="why-cell reveal">
-        <div class="why-icon">
+      <div class="why-cell rv">
+        <div class="why-ico">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
-        <div class="why-title">Sounds Human</div>
-        <div class="why-desc">Clients can spot AI proposals instantly. Ours are crafted to sound natural, confident, and genuine — like a top-rated freelancer wrote every word.</div>
+        <div class="why-ttl">Sounds 100% Human</div>
+        <div class="why-desc">Clients spot AI proposals instantly. Ours are crafted to sound natural, confident, and genuine — referencing specific job details so every proposal feels exclusively written for that one client.</div>
       </div>
     </div>
   </div>
@@ -1600,172 +1084,155 @@ Example: 3 years Python, built 5 REST APIs for SaaS companies, expert in Flask a
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">Proposal<span>Craft</span></div>
-  <div class="footer-note">Built by Rohail — Powered by Gemini AI — Free Forever</div>
+  <div class="foot-brand">Proposal<span>Craft</span></div>
+  <div class="foot-note">Built by Rohail · Powered by Gemini AI · Free Forever</div>
 </footer>
 
 <script>
-// CURSOR
-const cursor = document.getElementById('cursor');
-const ring = document.getElementById('ring');
-let mx = 0, my = 0, rx = 0, ry = 0;
-
-document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  cursor.style.left = mx - 5 + 'px';
-  cursor.style.top = my - 5 + 'px';
+// ─── CURSOR ───
+const cd = document.getElementById('cd'), cr = document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cd.style.left=mx+'px';cd.style.top=my+'px';
 });
-
-(function animRing() {
-  rx += (mx - rx - 16) * 0.1;
-  ry += (my - ry - 16) * 0.1;
-  ring.style.left = rx + 'px';
-  ring.style.top = ry + 'px';
-  requestAnimationFrame(animRing);
+(function loop(){
+  rx+=(mx-rx)*.12;ry+=(my-ry)*.12;
+  cr.style.left=rx+'px';cr.style.top=ry+'px';
+  requestAnimationFrame(loop);
 })();
-
-document.querySelectorAll('button, a, .tone-btn, .input-card, .why-cell').forEach(el => {
-  el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(2.5)'; ring.style.transform = 'scale(1.3)'; });
-  el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; ring.style.transform = 'scale(1)'; });
+document.querySelectorAll('button,a,.tone-pill,.field-card,.why-cell').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cd.style.transform='translate(-50%,-50%) scale(2.5)';cr.style.transform='translate(-50%,-50%) scale(1.4)';});
+  el.addEventListener('mouseleave',()=>{cd.style.transform='translate(-50%,-50%) scale(1)';cr.style.transform='translate(-50%,-50%) scale(1)';});
 });
 
-// PROGRESS BAR
-window.addEventListener('scroll', () => {
-  const p = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
-  document.getElementById('progress').style.width = p + '%';
-  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
+// ─── SCROLL ───
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  document.getElementById('topbar').style.width=p+'%';
+  document.getElementById('nav').classList.toggle('solid',window.scrollY>10);
 });
 
-// SCROLL REVEAL
-const observer = new IntersectionObserver(entries => {
-  entries.forEach((e, i) => {
-    if (e.isIntersecting) {
-      setTimeout(() => e.target.classList.add('revealed'), i * 80);
+// ─── REVEAL ───
+const ro=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting) setTimeout(()=>e.target.classList.add('in'),i*70);
+  });
+},{threshold:0.08});
+document.querySelectorAll('.rv').forEach(el=>ro.observe(el));
+
+// ─── TIPS ───
+const to=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      document.querySelectorAll('.tip').forEach((t,i)=>setTimeout(()=>t.classList.add('visible'),i*120));
     }
   });
-}, { threshold: 0.1 });
+},{threshold:0.2});
+const tc=document.querySelector('.tips-card');
+if(tc)to.observe(tc);
 
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-// TIPS REVEAL
-const tipsObs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      document.querySelectorAll('.tip').forEach((t, i) => {
-        setTimeout(() => t.classList.add('show'), i * 150);
-      });
-    }
-  });
-}, { threshold: 0.3 });
-
-document.querySelector('.tips-card') && tipsObs.observe(document.querySelector('.tips-card'));
-
-// TYPING ANIMATION
-const proposals = [
-  "I noticed you need a Python developer who can build a scalable REST API quickly. I've done exactly this — delivering a similar API for a SaaS client in 2 weeks that now handles 50K+ daily requests. I'd love to walk you through my approach...",
-  "Your project immediately caught my attention because I specialize in exactly this — React dashboards with real-time data. I built three similar tools last year, one of which reduced client reporting time by 70%. Can I share a quick demo?"
-];
-
-let pIdx = 0, cIdx = 0, typing = true;
-const typingEl = document.getElementById('typingText');
-
-function typeLoop() {
-  if (!typingEl) return;
-  const txt = proposals[pIdx];
-  if (typing) {
-    if (cIdx < txt.length) {
-      typingEl.innerHTML = txt.slice(0, ++cIdx) + '<span class="typing-cursor"></span>';
-      setTimeout(typeLoop, 28);
-    } else {
-      typing = false;
-      setTimeout(typeLoop, 2800);
-    }
-  } else {
-    if (cIdx > 0) {
-      typingEl.innerHTML = txt.slice(0, --cIdx) + '<span class="typing-cursor"></span>';
-      setTimeout(typeLoop, 12);
-    } else {
-      typing = true;
-      pIdx = (pIdx + 1) % proposals.length;
-      setTimeout(typeLoop, 400);
-    }
-  }
+// ─── TONE ───
+let tone='professional';
+function setTone(el,t){
+  document.querySelectorAll('.tone-pill').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on'); tone=t;
 }
 
-setTimeout(typeLoop, 1200);
-
-// TONE
-let tone = 'professional';
-function setTone(el, t) {
-  document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  tone = t;
+// ─── LOADING STEPS ───
+let stepTimer=null;
+function startSteps(){
+  clearTimeout(stepTimer);
+  document.getElementById('s1').classList.add('active');
+  document.getElementById('s2').classList.remove('active');
+  document.getElementById('s3').classList.remove('active');
+  stepTimer=setTimeout(()=>{document.getElementById('s2').classList.add('active');},900);
+  stepTimer=setTimeout(()=>{document.getElementById('s3').classList.add('active');},1900);
 }
 
-// GENERATE
-async function generate() {
-  const job = document.getElementById('job_post').value.trim();
-  const skills = document.getElementById('freelancer_skills').value.trim();
-  const rate = document.getElementById('hourly_rate').value.trim();
-  const exp = document.getElementById('experience').value.trim();
+// ─── GENERATE ───
+async function generate(){
+  const job=document.getElementById('job_post').value.trim();
+  const skills=document.getElementById('freelancer_skills').value.trim();
+  const rate=document.getElementById('hourly_rate').value.trim();
+  const exp=document.getElementById('experience').value.trim();
 
-  if (!job || !skills) {
-    alert('Please fill in the job post and your skills.');
+  if(!job||!skills){
+    const missing=!job?'job post':'your skills';
+    alert(`Please fill in the ${missing} before generating.`);
     return;
   }
 
-  const btn = document.getElementById('genBtn');
-  const loading = document.getElementById('loading');
-  const output = document.getElementById('output');
+  const btn=document.getElementById('genBtn');
+  const loadArea=document.getElementById('loadArea');
+  const outArea=document.getElementById('outArea');
 
-  btn.disabled = true;
-  document.getElementById('btnText').textContent = 'Generating...';
-  loading.classList.add('show');
-  output.classList.remove('show');
+  btn.disabled=true;
+  document.getElementById('btnTxt').textContent='Generating...';
+  loadArea.classList.add('on');
+  outArea.classList.remove('on');
 
-  // Reset progress animation
-  const fill = document.getElementById('progressFill');
-  fill.style.animation = 'none';
-  fill.offsetHeight;
-  fill.style.animation = 'loadProgress 3s ease-in-out forwards';
+  // Reset loading bar
+  const fill=document.getElementById('loadFill');
+  fill.style.animation='none';fill.offsetHeight;
+  fill.style.animation='fillUp 3.5s ease-in-out forwards';
 
-  try {
-    const res = await fetch('/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ job_description: job, skills, rate, experience: exp, tone })
+  startSteps();
+
+  try{
+    const res=await fetch('/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({job_description:job,skills,rate,experience:exp,tone})
     });
+    const data=await res.json();
+    const text=data.cover_letter||data.error||'Something went wrong. Please try again.';
 
-    const data = await res.json();
-    const text = data.cover_letter;
+    document.getElementById('proposal-text').textContent=text;
 
-    document.getElementById('proposalText').textContent = text;
-    document.getElementById('wordCount').textContent = text.split(/\s+/).filter(Boolean).length + ' words';
+    // Word count
+    const words=text.split(/\s+/).filter(Boolean).length;
+    document.getElementById('wc').textContent=words+' words';
 
-    loading.classList.remove('show');
-    output.classList.add('show');
-    output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Upwork char limit (5000 chars)
+    const chars=text.length;
+    const pct=Math.min(chars/5000*100,100);
+    const clFill=document.getElementById('clFill');
+    clFill.style.width=pct+'%';
+    clFill.className='cl-fill'+(pct>90?' over':pct>70?' warn':'');
+    document.getElementById('clNum').textContent=chars+' / 5000';
 
-  } catch (err) {
-    alert('Something went wrong. Please try again.');
-    loading.classList.remove('show');
+    loadArea.classList.remove('on');
+    outArea.classList.add('on');
+    setTimeout(()=>outArea.scrollIntoView({behavior:'smooth',block:'start'}),100);
+
+  }catch(err){
+    alert('Connection error. Make sure the server is running and try again.');
+    loadArea.classList.remove('on');
   }
 
-  btn.disabled = false;
-  document.getElementById('btnText').textContent = 'Generate Proposal';
+  btn.disabled=false;
+  document.getElementById('btnTxt').textContent='Generate Proposal';
 }
 
-// COPY
-function copyProposal() {
-  navigator.clipboard.writeText(document.getElementById('proposalText').textContent);
-  const btn = document.getElementById('copyBtn');
-  btn.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
-  btn.classList.add('copied');
-  setTimeout(() => {
-    btn.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Proposal`;
-    btn.classList.remove('copied');
-  }, 2500);
+// ─── COPY ───
+function copyIt(){
+  const text=document.getElementById('proposal-text').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.getElementById('copyBtn');
+    btn.innerHTML=`<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Copied!`;
+    btn.classList.add('copied');
+    setTimeout(()=>{
+      btn.innerHTML=`<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy Proposal`;
+      btn.classList.remove('copied');
+    },2500);
+  });
 }
+
+// ─── ENTER TO GENERATE ───
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter') generate();
+});
 </script>
 </body>
 </html>
