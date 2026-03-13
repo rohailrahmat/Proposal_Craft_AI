@@ -1,9 +1,17 @@
 import os
+import sys
+import traceback
 from flask import Flask, render_template, request, jsonify
 from google import genai
+from google.genai import types
 
 app = Flask(__name__)
-client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+
+# ── API client ──────────────────────────────────────────────────────────
+_api_key = os.environ.get("GEMINI_API_KEY", "")
+if not _api_key:
+    print("WARNING: GEMINI_API_KEY is not set. Generation will fail.", file=sys.stderr)
+client = genai.Client(api_key=_api_key)
 
 
 def build_proposal_prompt(job_description, skills, rate, experience, tone):
@@ -525,7 +533,7 @@ def home():
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    data            = request.json
+    data            = request.json or {}
     job_description = data.get("job_description", "").strip()
     skills          = data.get("skills", "").strip()
     rate            = data.get("rate", "").strip()
@@ -536,6 +544,8 @@ def generate():
         return jsonify({"error": "Job description is required."}), 400
     if not skills:
         return jsonify({"error": "Your skills and background are required."}), 400
+    if not _api_key:
+        return jsonify({"error": "GEMINI_API_KEY is not configured on the server."}), 500
 
     prompt = build_proposal_prompt(job_description, skills, rate, experience, tone)
 
@@ -543,16 +553,16 @@ def generate():
         response = client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,
-            config={
-                "temperature": 0.72,
-                "top_p":       0.90,
-                "max_output_tokens": 8192,
-            }
+            config=types.GenerateContentConfig(
+                temperature=0.72,
+                top_p=0.90,
+                max_output_tokens=8192,
+            ),
         )
 
         proposal_text = response.text.strip()
 
-        # Strip any accidental preamble
+        # Strip any accidental preamble the model adds
         preamble_triggers = [
             "here is your proposal",
             "here's your proposal",
@@ -578,9 +588,13 @@ def generate():
         return jsonify({"cover_letter": proposal_text})
 
     except Exception as e:
-        return jsonify({"error": f"Generation failed: {str(e)}"}), 500
+        tb = traceback.format_exc()
+        print(f"Generation error:\n{tb}", file=sys.stderr)
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)
+    print(f"Starting on port {port}")
+    print(f"API key set: {bool(_api_key)}")
+    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=False)
