@@ -1,4 +1,5 @@
 import os
+import time
 import logging
 from flask import Flask, render_template, request, jsonify
 from google import genai
@@ -11,7 +12,21 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+
+MODELS_FALLBACK_LIST = [
+    "gemini-3-flash-preview",
+    "gemini-flash-latest",
+    "gemini-3.8-flash",
+    "gemini-3.1-flash-lite-preview",
+]
+
+
+def get_genai_client():
+    load_dotenv(override=True)
+    api_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY is not set in your .env file.")
+    return genai.Client(api_key=api_key)
 
 
 def build_proposal_prompt(job_description, skills, rate, experience, tone):
@@ -442,7 +457,7 @@ BULLET 3: Does it contain ANY banned phrase from the Bullet 3 list?
   Does it have a specific number attached to a specific deliverable?
   If not = it fails. Rewrite with a number and a named feature.
 
-EM DASHES: Scan the entire proposal for — and –
+EM DASHES: Scan the entire proposal for em dashes or en dashes
   If any exist = replace with a period, comma, or rewrite the sentence.
   Zero em dashes or en dashes anywhere in the final output.
 
@@ -526,16 +541,87 @@ Make not replying feel like a mistake they will genuinely regret.
 """
 
 
+def generate_proposal_content(prompt):
+    client = get_genai_client()
+    last_error = None
+
+    for model_name in MODELS_FALLBACK_LIST:
+        for attempt in range(3):
+            try:
+                logger.info(f"Attempting generation with Gemini model '{model_name}' (attempt {attempt + 1})...")
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        temperature=0.72,
+                        top_p=0.90,
+                        max_output_tokens=4096,
+                    ),
+                )
+                if response and response.text:
+                    logger.info(f"Successfully generated proposal with model '{model_name}'")
+                    return response.text.strip()
+            except Exception as e:
+                err_str = str(e)
+                logger.warning(f"Model '{model_name}' attempt {attempt + 1} failed: {err_str}")
+                last_error = e
+                if "404" in err_str:
+                    break
+                if "503" in err_str or "429" in err_str:
+                    sleep_time = (attempt + 1) * 2
+                    logger.info(f"Temporary demand spike on '{model_name}'. Backing off for {sleep_time}s...")
+                    time.sleep(sleep_time)
+
+    raise RuntimeError(f"All AI models are temporarily experiencing high demand. Please try again in a few seconds. ({last_error})")
+
+
+def clean_proposal_text(text):
+    if not text:
+        return ""
+    preamble_triggers = [
+        "here is your proposal",
+        "here's your proposal",
+        "here is the proposal",
+        "below is your proposal",
+        "i've written",
+        "i have written",
+        "absolutely,",
+        "certainly,",
+        "sure,",
+        "of course,",
+        "great,",
+        "okay,",
+    ]
+    lower = text.lower()
+    for trigger in preamble_triggers:
+        if lower.startswith(trigger):
+            lines = text.split("\n", 1)
+            if len(lines) > 1:
+                text = lines[1].strip()
+            break
+    return text
+
+
 @app.route("/")
 def home():
     return render_template("index.html")
+
+
+@app.route("/health")
+def health():
+    has_key = bool(os.environ.get("GEMINI_API_KEY", "").strip())
+    return jsonify({
+        "status": "healthy",
+        "api_key_configured": has_key,
+        "models": MODELS_FALLBACK_LIST
+    })
 
 
 @app.route("/generate", methods=["POST"])
 def generate():
     data = request.get_json(silent=True)
     if not data:
-        return jsonify({"error": "Request body must be JSON."}), 400
+        return jsonify({"error": "Request body must be valid JSON."}), 400
 
     job_description = data.get("job_description", "").strip()
     skills          = data.get("skills", "").strip()
@@ -551,46 +637,12 @@ def generate():
     prompt = build_proposal_prompt(job_description, skills, rate, experience, tone)
 
     try:
-        logger.info("Sending prompt to Gemini API (model=gemini-2.5-flash)")
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                temperature=0.72,
-                top_p=0.90,
-                max_output_tokens=8192,
-                thinking_config=types.ThinkingConfig(thinking_budget=0),
-            ),
-        )
-
-        proposal_text = response.text.strip()
-        logger.info("Gemini API response received successfully")
-
-        # Strip any accidental preamble
-        preamble_triggers = [
-            "here is your proposal",
-            "here's your proposal",
-            "here is the proposal",
-            "below is your proposal",
-            "i've written",
-            "i have written",
-            "absolutely,",
-            "certainly,",
-            "sure,",
-            "of course,",
-            "great,",
-            "okay,",
-        ]
-        lower = proposal_text.lower()
-        for trigger in preamble_triggers:
-            if lower.startswith(trigger):
-                lines = proposal_text.split("\n", 1)
-                if len(lines) > 1:
-                    proposal_text = lines[1].strip()
-                break
-
+        raw_text = generate_proposal_content(prompt)
+        proposal_text = clean_proposal_text(raw_text)
         return jsonify({"cover_letter": proposal_text})
-
+    except ValueError as ve:
+        logger.error(f"Configuration error: {ve}")
+        return jsonify({"error": str(ve)}), 400
     except Exception as e:
         logger.exception("Gemini API call failed: %s", e)
         return jsonify({"error": f"Generation failed: {str(e)}"}), 500
@@ -598,4 +650,4 @@ def generate():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)
+    app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)

@@ -1,2 +1,22 @@
-git add -A
-git status
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Environment Variables (Keep API keys private)
+.env
+.env.*
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# IDE
+.idea/
+.vscode/
+
+# OS Files
+.DS_Store
+Thumbs.db
