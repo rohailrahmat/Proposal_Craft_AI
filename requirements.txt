@@ -1,4 +1,4 @@
-flask
-google-genai
-gunicorn
-python-dotenv
+flask==3.1.0
+google-genai==2.28.0
+gunicorn==23.0.0
+python-dotenv==1.1.0
