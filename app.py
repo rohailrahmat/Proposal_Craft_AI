@@ -1,9 +1,14 @@
 import os
+import logging
 from flask import Flask, render_template, request, jsonify
 from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
@@ -528,7 +533,10 @@ def home():
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    data            = request.json
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Request body must be JSON."}), 400
+
     job_description = data.get("job_description", "").strip()
     skills          = data.get("skills", "").strip()
     rate            = data.get("rate", "").strip()
@@ -543,17 +551,20 @@ def generate():
     prompt = build_proposal_prompt(job_description, skills, rate, experience, tone)
 
     try:
+        logger.info("Sending prompt to Gemini API (model=gemini-2.5-flash)")
         response = client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,
-            config={
-                "temperature": 0.72,
-                "top_p":       0.90,
-                "max_output_tokens": 8192,
-            }
+            config=types.GenerateContentConfig(
+                temperature=0.72,
+                top_p=0.90,
+                max_output_tokens=8192,
+                thinking_config=types.ThinkingConfig(thinking_budget=0),
+            ),
         )
 
         proposal_text = response.text.strip()
+        logger.info("Gemini API response received successfully")
 
         # Strip any accidental preamble
         preamble_triggers = [
@@ -581,6 +592,7 @@ def generate():
         return jsonify({"cover_letter": proposal_text})
 
     except Exception as e:
+        logger.exception("Gemini API call failed: %s", e)
         return jsonify({"error": f"Generation failed: {str(e)}"}), 500
 
 
